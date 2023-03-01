@@ -3,9 +3,11 @@
     (:requirements :typing :strips :conditional-effects :quantified-preconditions :disjunctive-preconditions)
 
     (:types
-        location entity - object
-        field barn - location
-        sheep farmer - entity
+        land structure entity - object
+        river building - structure
+        animal person - entity
+        cow dog pig sheep - animal
+        adult child - person
     )
     
     (:predicates

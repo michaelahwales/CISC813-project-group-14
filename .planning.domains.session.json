@@ -1,0 +1,10 @@
+{
+    "hash": "jMuhu1AIkb",
+    "writeHash": "VF0B2TZFk23F43g",
+    "versionDate": "2023-03-01T20:12:13.000Z",
+    "files": {
+        "problem.pddl": "(define (problem northeye1)\n\n    (:domain pastures)\n    \n    (:objects)\n    \n    (:init)\n    \n    (:goal)\n    \n)",
+        "domain.pddl": "(define (domain pastures)\n\n    (:requirements :typing :strips :conditional-effects :quantified-preconditions :disjunctive-preconditions)\n    \n    (:predicates\n        ()\n        ()\n        ()\n    )\n    \n    (:functions)\n    \n    \n    (:action)\n    \n    (:action)\n    \n)"
+    },
+    "plugins": {}
+}

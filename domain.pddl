@@ -19,6 +19,8 @@
         (highground ?l - land) ; highground cannot be flooded
         (lowground ?l - land)  ; lowground can be flooded
         (flooded ?l - land)    ; flood status of a land segment
+        (floodingEvent)        ; does a flooding event occur in this scenario?
+        ; scene fluents to specify scenario goals...
     )
     
     (:functions)

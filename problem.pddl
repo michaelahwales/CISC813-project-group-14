@@ -3,8 +3,9 @@
     (:domain northeye)
     
     (:objects
-        g1 g2 g3 - ground
-        r1 - river
+        g1 g2 g3 - landseg
+        r1 - riverseg
+        muise - adult
     )
     
     (:init
@@ -23,11 +24,14 @@
         (adj g3 g2)
         (adj r1 g3)
         (adj g3 r1)
+
+        (location muise g2)
     )
     
     (:goal
         (and
-            (floodingEvent)
+            ;(floodingEvent)
+            (location muise g1)
         )
     )
     

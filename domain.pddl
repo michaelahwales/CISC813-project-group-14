@@ -68,41 +68,41 @@
     
     )
 
-    (:action floodingScene
-        :parameters ()
+    ; (:action floodingScene
+    ;     :parameters ()
 
-        :precondition (and
-            (not (floodingEvent))   ; scene hasn't happened
-        )
+    ;     :precondition (and
+    ;         (not (floodingEvent))   ; scene hasn't happened
+    ;     )
 
-        :effect (and
-            (floodingEvent)         ; scene has happened
+    ;     :effect (and
+    ;         (floodingEvent)         ; scene has happened
 
-            (forall (?g - landseg ?r - riverseg)        ; for every ground and river segment
-                (when (and (adj ?g ?r) (lowground ?g) (not (and (embankment ?r) (dredge ?r))))  ; river and ground connected, is low ground, and no flood precaution in place
-                    (and 
-                        (flooded ?g)    ; ground segment gets the flooded condition
-                    )
-                )
-            )
-            ; finagling for river segments to flood ---------------
-            (forall (?g - landseg ?s - structure)    ; for every ground segment and structure
-                (when (and (location ?s ?g) (flooded ?g))   ; structure is on ground segment, and ground is flooded
-                    (and
-                        (damaged ?s)    ; structure gets the damaged condition
-                    )
-                )
-            )
+    ;         (forall (?g - landseg ?r - riverseg)        ; for every ground and river segment
+    ;             (when (and (adj ?g ?r) (lowground ?g) (not (and (embankment ?r) (dredge ?r))))  ; river and ground connected, is low ground, and no flood precaution in place
+    ;                 (and 
+    ;                     (flooded ?g)    ; ground segment gets the flooded condition
+    ;                 )
+    ;             )
+    ;         )
+    ;         ; finagling for river segments to flood ---------------
+    ;         (forall (?g - landseg ?s - structure)    ; for every ground segment and structure
+    ;             (when (and (location ?s ?g) (flooded ?g))   ; structure is on ground segment, and ground is flooded
+    ;                 (and
+    ;                     (damaged ?s)    ; structure gets the damaged condition
+    ;                 )
+    ;             )
+    ;         )
 
-            (forall (?g - landseg ?e - entity)
-                (when (and (location ?e ?g) (flooded ?g))
-                    (and
-                        (drowned ?e)
-                    )
-                )
-            )
-        )
-    )
+    ;         (forall (?g - landseg ?e - entity)
+    ;             (when (and (location ?e ?g) (flooded ?g))
+    ;                 (and
+    ;                     (drowned ?e)
+    ;                 )
+    ;             )
+    ;         )
+    ;     )
+    ; )
 
     (:action move-entity
         :parameters (?e - entity ?l1 ?l2 - mapseg)
@@ -117,6 +117,19 @@
             (not (location ?e ?l1))
         )
     )
+
+    (:action repair-structure
+        :parameters (?a - adult ?s - structure ?l - landseg)
+        :precondition (and 
+            (location ?a ?l)
+            (location ?s ?l)
+            (damaged ?s)
+        )
+        :effect (and 
+            (not (damaged ?s))
+        )
+    )
+    
 
 
     

@@ -1,5 +1,3 @@
 # CISC813-project-group-14
 CISC813 Automated Planning project. Winter 2023.
-
-
-hhhhh
+Group 14 - Evelyn Yach and Michaelah Wales

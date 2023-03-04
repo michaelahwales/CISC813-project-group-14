@@ -4,8 +4,9 @@
 
     (:types
         landseg locatable - object
-        ground river - landseg
+        ground river - landseg ; should river be a structure so it can be located on a land segment?
         structure entity - locatable
+        building - structure ; or have river structs that flow over land AND also riverseg which are landsegs that are entirely river, no land?
         animal person - entity
         cow dog pig sheep - animal
         adult child - person
@@ -32,7 +33,21 @@
     
     (:functions)
     
-    ;(:action dredge-river)
+    (:action dredge-river
+        :parameters (?l - landseg ?a - adult  ?r - river) 
+    
+      :precondition (and
+            (location ?r ?l) ; location must have a river segment - - - this is where hierarchy matters...
+            (not (dredge ?r)) ; river must not have been dredged already - - - is this a struct or a condition?
+            (location ?a ?l) ; adult must be at the location
+            
+        )
+
+        :effect (and
+            (dredge ?r) ; river is dredged
+            (location ?a ?l) ; adult is still at the location
+        )
+    )
     
     ;(:action build-embankment)
 

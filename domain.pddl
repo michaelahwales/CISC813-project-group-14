@@ -6,6 +6,7 @@
         landseg locatable - object
         ground river - landseg ; should river be a structure so it can be located on a land segment?
         structure entity - locatable
+        ; riverseg landseg - mapseg ; with mapseg as a locatable
         building - structure ; or have river structs that flow over land AND also riverseg which are landsegs that are entirely river, no land?
         animal person - entity
         cow dog pig sheep - animal

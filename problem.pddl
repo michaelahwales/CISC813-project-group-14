@@ -6,7 +6,9 @@
         g1 g2 g3 - landseg
         r1 - riverseg
         muise - adult
-        house - structure
+        house - building
+        muiseFarm whoseFarm - farm
+        trevor - sheep
     )
     
     (:init
@@ -26,10 +28,14 @@
         (adj r1 g3)
         (adj g3 r1)
 
-        (location muise g1)
+        (location muise g3)
         (location house g3)
+        (location muiseFarm g3)
+        (location whoseFarm g1)
+        (location trevor g1)
 
-        (damaged house)
+        (tired muise)
+        
     )
     
     (:goal
@@ -37,7 +43,14 @@
             ; (floodingEvent)
             ;(location muise g1)
             ;(embankEvent)
-            (not (damaged house))
+            ;(not (damaged house))
+            ;(breakfastEvent)
+            ;(lunchEvent)
+            ;(dinnerEvent)
+            ;(workEvent)
+            (location trevor g3)
+            (tended trevor)
+
         )
     )
     

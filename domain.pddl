@@ -6,6 +6,7 @@
         mapseg locatable - object
         riverseg landseg - mapseg
         structure entity - locatable
+        building farm - structure
         animal person - entity
         cow dog pig sheep - animal
         adult child - person
@@ -23,7 +24,9 @@
         (lowground ?x - landseg)  ; lowground can be flooded
         (flooded ?x - mapseg)    ; flood status of a map segment
         (damaged ?x - structure)    ; structure status
-        (drowned ?e - entity)
+        (drowned ?x - entity)
+        (tired ?x - person)
+        (tended ?x - animal)
 
 
         ; Scene Fluents 
@@ -31,6 +34,11 @@
         ; scene fluents to specify scenario goals...
         (dredgeEvent)
         (embankEvent)
+        (breakfastEvent)
+        (lunchEvent)
+        (dinnerEvent)
+        (workEvent)
+        (tendAnimalEvent)
     )
     
     (:functions)
@@ -104,17 +112,114 @@
     ;     )
     ; )
 
-    (:action move-entity
-        :parameters (?e - entity ?l1 ?l2 - mapseg)
-        :precondition (and 
-            (adj ?l1 ?l2)
-            (location ?e ?l1)
-            (not (drowned ?e))
-            (not (flooded ?l2)) 
+    (:action breakfastScene
+        :parameters (?l - landseg ?p - person ?h - building)
+        :precondition (and
+            (location ?p ?l)
+            (location ?h ?l)
+            ; assume if entity on same tile as building, they may use it
+            (not(breakfastEvent)) 
+            (not(lunchEvent))
+            (not(dinnerEvent))
+            (not(damaged ?h))
         )
         :effect (and 
-            (location ?e ?l2)
-            (not (location ?e ?l1))
+            (breakfastEvent)
+            (not (tired ?p))
+        )
+    )
+    
+    (:action lunchScene
+        :parameters (?l - landseg ?p - person ?h - building)
+        :precondition (and 
+            (location ?p ?l)
+            (location ?h ?l)
+            ; assume if entity on same tile as building, they may use it
+            (breakfastEvent)
+            (not(lunchEvent))
+            (not(dinnerEvent))
+            (not(damaged ?h))
+        )
+        :effect (and 
+            (lunchEvent)
+            (not (tired ?p))
+        )
+    )
+    
+    (:action dinnerScene
+        :parameters (?l - landseg ?p - person ?h - building)
+        :precondition (and
+            (location ?p ?l)
+            (location ?h ?l)
+            ; assume if entity on same tile as building, they may use it
+            (breakfastEvent)
+            (lunchEvent)
+            ; must have had breakfast and lunch before eating dinner
+            (not(dinnerEvent))
+            (not(damaged ?h))
+        )
+        :effect (and 
+            (dinnerEvent)
+            (not (tired ?p))
+        )
+    )
+
+    (:action workScene
+        :parameters (?l - landseg ?a - adult ?f - farm)
+        :precondition (and 
+            (location ?f ?l)
+            (location ?a ?l)
+            (not(damaged ?f))
+            (not(tired ?a))
+        )
+        :effect (and 
+            (tired ?a)
+            (workEvent)
+        )
+    )
+
+    (:action tendAnimalScene
+        :parameters (?mal - animal ?a - adult ?l - landseg ?f - farm)
+        :precondition (and 
+            (location ?a ?l)
+            (location ?mal ?l)
+            (location ?f ?l)
+            (not(tended ?mal))
+            (not(tired ?a))
+        )
+        :effect (and
+            (tendAnimalEvent)
+            (tended ?mal)
+            (tired ?a)
+        )
+    )
+    
+    (:action move-animal
+        :parameters (?a - adult ?mal - animal ?l1 ?l2 - mapseg)
+        :precondition (and 
+            (location ?a ?l1)
+            (location ?mal ?l1)
+            (adj ?l1 ?l2)
+        )
+        :effect (and 
+            (location ?a ?l2)
+            (location ?mal ?l2)
+            (not(location ?a ?l1))
+            (not(location ?mal ?l1))
+        )
+    )
+    
+
+    (:action move-person
+        :parameters (?p - person ?l1 ?l2 - mapseg)
+        :precondition (and 
+            (adj ?l1 ?l2)
+            (location ?p ?l1)
+            ; check for flooding later
+        )
+        :effect (and 
+            (location ?p ?l2)
+            (not (location ?p ?l1))
         )
     )
 
@@ -124,9 +229,11 @@
             (location ?a ?l)
             (location ?s ?l)
             (damaged ?s)
+            (not(tired ?a))
         )
         :effect (and 
             (not (damaged ?s))
+            (tired ?a)
         )
     )
     

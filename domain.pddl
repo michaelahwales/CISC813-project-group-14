@@ -16,6 +16,7 @@
         ; -- General --
         (location ?x - locatable ?y - mapseg) ; location of an entity or structure
         (adj ?x1 ?x2 - mapseg)                ; adjacency relationship for map segments
+        (owns ?x - person ?y - structure)         ; ownership for structures
 
         ; -- Conditions --
         ; map segment conditions
@@ -91,6 +92,7 @@
             (not(lunchEvent))       ; a lunch has not yet occured
             (not(dinnerEvent))      ; a dinner has not yet occured
             (not(damaged ?h))       ; can't eat in a damaged building
+            (owns ?p ?h)            ; person lives in this building
         )
         :effect (and 
             (breakfastEvent)        ; there has now been a breakfast event
@@ -111,6 +113,7 @@
             (not(dinnerEvent))  ;                          ... but before dinner
 
             (not(damaged ?h))   ; can't eat in a damaged building
+            (owns ?p ?h)        ; person lives in this building
         )
         :effect (and 
             (lunchEvent)        ; there has now been a lunch event
@@ -130,7 +133,8 @@
             (lunchEvent)
             (not(dinnerEvent))
             
-            (not(damaged ?h))   ; can't eat in a damaged building  
+            (not(damaged ?h))   ; can't eat in a damaged building
+            (owns ?p ?h)        ; person lives in this building
         )
         :effect (and 
             (dinnerEvent)       ; there has now been a dinner event
@@ -148,6 +152,7 @@
 
             (not(damaged ?f))   ; farm is not damaged
             (not(tired ?a))     ; adult is not tired
+            (owns ?a ?f)        ; person owns this farm
         )
         :effect (and 
             (tired ?a)          ; adult is now tired
@@ -166,6 +171,7 @@
 
             (not(tended ?mal))  ; animal has not already been tended to
             (not(tired ?a))     ; adult is not tired
+            (owns ?a ?f)        ; person owns this farm
         )
         :effect (and
             (tendAnimalEvent)   ; tending to animal event has now occured

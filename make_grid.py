@@ -7,9 +7,9 @@ num_cols = 8
 
 #connect across rows
 print(";connect across rows")
-for row in range(num_rows):
+for row in range(0, num_rows, 1):
     
-    row=row+1   #iterate before printing so we dont start @ 0
+    #row=row+1   #iterate before printing so we dont start @ 0
     
     for col in range(num_cols-1):
         

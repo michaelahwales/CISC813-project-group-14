@@ -134,27 +134,6 @@
     
     ; )
 
-    ; ; have a breakfast scene to remove the tired condition from a person
-    ; (:action breakfastScene
-    ;     :parameters (?l - landseg ?p - person ?h - building)
-    ;     :precondition (and
-    ;         ; make sure the person and the building are both on the same land segment
-    ;         (location ?p ?l)
-    ;         (location ?h ?l)    ; assume if entity on same tile as building, they may use it
-            
-    ;         (not(breakfastEvent))   ; a breakfast has not yet occured
-    ;         (not(lunchEvent))       ; a lunch has not yet occured
-    ;         (not(dinnerEvent))      ; a dinner has not yet occured
-    ;         (not(damaged ?h))       ; can't eat in a damaged building
-    ;         (owns ?p ?h)            ; person lives in this building
-    ;     )
-    ;     :effect (and 
-    ;         (breakfastEvent)        ; there has now been a breakfast event
-    ;         (not (tired ?p))        ; person is no longer tired (perhaps change this to apply for everyone on the tile? group meal!)
-    ;     )
-    ; )
-
-
     ; DURATIVE - have a breakfast scene to remove the tired condition from a person
     (:durative-action breakfastScene
         :parameters (?l - landseg ?p - person ?h - building)
@@ -184,27 +163,6 @@
         )
     )  
 
-    ; ; have a lunch scene to remove the tired condition from a person
-    ; (:action lunchScene
-    ;     :parameters (?l - landseg ?p - person ?h - building)
-    ;     :precondition (and 
-    ;         ; make sure the person and the building are both on the same land segment
-    ;         (location ?p ?l)
-    ;         (location ?h ?l)    ; assume if entity on same tile as building, they may use it
-
-    ;         (breakfastEvent)    ; lunch must occur after breakfast...
-    ;         (not(lunchEvent))
-    ;         (not(dinnerEvent))  ;                          ... but before dinner
-
-    ;         (not(damaged ?h))   ; can't eat in a damaged building
-    ;         (owns ?p ?h)        ; person lives in this building
-    ;     )
-    ;     :effect (and 
-    ;         (lunchEvent)        ; there has now been a lunch event
-    ;         (not (tired ?p))    ; person is no longer tired (perhaps change this to apply for everyone on the tile? group meal!)
-    ;     )
-    ; )
-
     ; DURATIVE - have a lunch scene to remove the tired condition from a person
     (:durative-action lunchScene
         :parameters (?l - landseg ?p - person ?h - building)
@@ -233,27 +191,6 @@
             (at end (increase (meal-count-lunch ?p) 1))  
         )
     ) 
-    
-    ; ; have a dinner scene to remove the tired condition from a person 
-    ; (:action dinnerScene
-    ;     :parameters (?l - landseg ?p - person ?h - building)
-    ;     :precondition (and
-    ;         ; make sure the person and the building are both on the same land segment
-    ;         (location ?p ?l)
-    ;         (location ?h ?l)    ; assume if entity on same tile as building, they may use it
-
-    ;         (breakfastEvent)    ; can't have dinner before breakfast or lunch!
-    ;         (lunchEvent)
-    ;         (not(dinnerEvent))
-            
-    ;         (not(damaged ?h))   ; can't eat in a damaged building
-    ;         (owns ?p ?h)        ; person lives in this building
-    ;     )
-    ;     :effect (and 
-    ;         (dinnerEvent)       ; there has now been a dinner event
-    ;         (not (tired ?p))    ; person is no longer tired (perhaps change this to apply for everyone on the tile? group meal!)
-    ;     )
-    ; )
 
     ; DURATIVE - have a dinner scene to remove the tired condition from a person
     (:durative-action dinnerScene
@@ -283,24 +220,6 @@
             (at end (increase (meal-count-dinner ?p) 1))  
         )
     ) 
-
-    ; ; execute a work scene which will make an adult tired
-    ; (:action workScene
-    ;     :parameters (?l - landseg ?a - adult ?f - farm)
-    ;     :precondition (and 
-    ;         ; make sure the adult and the farm are both on the same land segment
-    ;         (location ?f ?l)
-    ;         (location ?a ?l)    ; assume if entity on same tile as the farm, they may use it
-
-    ;         (not(damaged ?f))   ; farm is not damaged
-    ;         (not(tired ?a))     ; adult is not tired
-    ;         (owns ?a ?f)        ; person owns this farm
-    ;     )
-    ;     :effect (and 
-    ;         (tired ?a)          ; adult is now tired
-    ;         (workEvent)         ; work scene has now occured
-    ;     )
-    ; )
 
     ; execute a work scene which will make an adult tired
     (:durative-action workScene
@@ -444,21 +363,6 @@
     ;         (at end (increase (current-time) (move-duration)))
     ;     )
     ; )
-    
-    ; move person between map segments
-    ; (:action move-person
-    ;     :parameters (?p - person ?l1 ?l2 - mapseg)
-    ;     :precondition (and
-    ;         (location ?p ?l1)       ; person is on the old segment 
-    ;         (adj ?l1 ?l2)           ; old segment is connected to new segemnt
-            
-    ;         ; check for flooding later (can't move to a flooded segment)
-    ;     )
-    ;     :effect (and 
-    ;         (location ?p ?l2)           ; person is now on the new segment
-    ;         (not (location ?p ?l1))     ; person is no longer on old segment
-    ;     )
-    ; )
 
     ; DURATIVE - move person between map segments
     (:durative-action move-person
@@ -480,23 +384,6 @@
             (at end (increase (current-time) (move-duration)))
         )
     )
-
-    ; ; repair a damaged farm or building! requires an adult!
-    ; (:action repair-structure
-    ;     :parameters (?a - adult ?s - structure ?l - landseg)
-    ;     :precondition (and 
-    ;         ; make sure adult and strucutre are on the same tile
-    ;         (location ?a ?l)
-    ;         (location ?s ?l)    ; assume if entity on same tile as the structure, they can repair it 
-
-    ;         (damaged ?s)        ; structure is damaged
-    ;         (not(tired ?a))     ; adult is not tired
-    ;     )
-    ;     :effect (and 
-    ;         (not (damaged ?s))  ; structure is no longer damaged
-    ;         (tired ?a)          ; adult is now tired
-    ;     )
-    ; )
 
     ; DURATIVE - repair a damaged farm or building! requires an adult!
     (:durative-action repair-structure

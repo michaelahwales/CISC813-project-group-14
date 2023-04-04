@@ -237,8 +237,8 @@
     
     (:goal
         (and
-            (location trevor g35)      ; the sheep known as 'trevor' should be in muiseFarm (g83)
-            ;(tended trevor)            ; trevor the sheep should be tended to
+            ;(location trevor g35)      ; the sheep known as 'trevor' should be in muiseFarm (g83)
+            ;(tended trevor)           ; trevor the sheep should be tended to
             ;(breakfastEvent)
             ;(>= (current-time) 4)
             ; (>= (meal-count breakfast) 3)
@@ -248,9 +248,11 @@
             ;(not-tired muise)
             ;(lunchEvent)
 
-            (location muise g83)
-            (dinnerEvent)
+            ;(location muise g83)
+            ;(dinnerEvent)
             ;(workEvent)
+
+            (tendAnimalEvent)
             
         )
     )

@@ -273,43 +273,43 @@
     ;     )
     ; )
 
-    ; DURATIVE - INCOMPLETE - execute a animal tending scene where an adult becomes tired, but an animal is tended to
-    ; (:durative-action tendAnimalScene
-    ;     :parameters (?mal - animal ?a - adult ?l - landseg ?f - farm)
-    ;     :duration (= ?duration (work-duration))
-    ;     :condition (and 
-    ;         ; make sure the adult, animal and farm are all on the same land segment
-    ;         (over all (location ?a ?l))
-    ;         (over all (location ?mal ?l))
-    ;         (over all (location ?f ?l))    ; assume if entity on same tile as the farm, they may use it
+    ;DURATIVE - execute a animal tending scene where an adult becomes tired, but an animal is tended to
+    (:durative-action tendAnimalScene
+        :parameters (?mal - animal ?a - adult ?l - landseg ?f - farm)
+        :duration (= ?duration (work-duration))
+        :condition (and 
+            ; make sure the adult, animal and farm are all on the same land segment
+            (over all (location ?a ?l))
+            (over all (location ?mal ?l))
+            (over all (location ?f ?l))    ; assume if entity on same tile as the farm, they may use it
 
-    ;         (at start (not-tended ?mal))  ; animal has not already been tended to
-    ;         (at start (not-tired ?a))     ; adult is not tired
-    ;         ;(over all (owns ?a ?f))       ; person owns this farm  - person owns, not adult
+            (at start (not-tended ?mal))  ; animal has not already been tended to
+            (at start (not-tired ?a))     ; adult is not tired
+            ;(over all (owns ?a ?f))       ; person owns this farm  - person owns, not adult
 
-    ;         (at start (not-working ?a))   ; adult is not already working
+            (at start (not-working ?a))   ; adult is not already working
+            (at start (not-moving ?a))   ; adult is not moving
+            (at start (not-moving ?mal))  ; animal is not moving
 
-            
+            (at start (<= (current-time) (max-time)))
+            ;(at start (<= (work-count ?a) (work-max)))    ; adult has not done more than the work limit
+            (at start (<= (tend-animal-count ?a) (work-max)))   ; can only tend animals as many times as the work limit will allow
+        )
+        :effect (and
 
-    ;         (at start (<= (current-time) (max-time)))
-    ;         (at start (<= (work-count ?a) (work-max)))    ; adult has not done more than the work limit
-    ;         ;(at start (<= (tend-animal-count ?a) (work-max)))   ; can only tend animals as many times as the work limit will allow
-    ;     )
-    ;     :effect (and
+            (at start (not (not-working ?a))) ; begin working
+            (at end (not-working ?a))         ; finish working
 
-    ;         (at start (not (not-working ?a))) ; begin working
-    ;         (at end (not-working ?a))         ; finish working
+            (at end (tendAnimalEvent))   ; tending to animal event has now occured
+            ;(at end (workEvent))    ; a work event has occured
+            (at end (not (not-tended ?mal)))       ; animal has now been tended to
+            (at end (not (not-tired ?a)))          ; adult is now tired
 
-    ;         ;(at end (tendAnimalEvent))   ; tending to animal event has now occured
-    ;         (at end (workEvent))    ; a work event has occured
-    ;         (at end (not (not-tended ?mal)))       ; animal has now been tended to
-    ;         (at end (not (not-tired ?a)))          ; adult is now tired
-
-    ;         (at end (increase (current-time) (work-duration)))
-    ;         (at end (increase (work-count ?a) 1)) 
-    ;         ;(at end (increase (tend-animal-count ?a) 1))
-    ;     )
-    ; )
+            (at end (increase (current-time) (work-duration)))
+            (at end (increase (work-count ?a) 1)) 
+            ;(at end (increase (tend-animal-count ?a) 1))
+        )
+    )
     
 
     ; ; General Actions - for inbetween scene actions

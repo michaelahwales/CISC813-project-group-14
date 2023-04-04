@@ -331,6 +331,7 @@
             (at start (not-moving ?mal))   ; animal is not already being moved
 
             ; check for flooding later (can't move to a flooded segment)
+            (at start (<= (current-time) (max-time)))
         )
         :effect (and
             (at start (not (not-moving ?a)))      ; begin moving the person

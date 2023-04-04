@@ -248,6 +248,7 @@
             ;(not-tired muise)
             ;(lunchEvent)
 
+            (location muise g83)
             (dinnerEvent)
             ;(workEvent)
             

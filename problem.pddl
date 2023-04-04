@@ -172,10 +172,17 @@
         (not (not-tired wallace))   ; start off tired
         (not-working muise)         ; start off not working
         (not-working wallace)       ; start off not working
-        (not-moving-animal muise)
-        (not-moving-animal wallace)
-        (not-busy muise)
-        (not-busy wallace)
+        ;(not-moving-animal muise)
+        ;(not-moving-animal wallace)
+        ;(not-busy muise)
+        ;(not-busy wallace)
+
+        ; people not moving
+        (not-moving muise)
+        (not-moving wallace)
+
+        ; animals not moving
+        (not-moving trevor)
 
         (owns muise muiseHouse)
         (owns muise muiseFarm)

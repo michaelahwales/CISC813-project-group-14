@@ -60,6 +60,7 @@
         ; -- Time --
         (not-eating)
         (not-working ?x - adult)
+        (not-busy ?x - person) ; make sure person is not doing another activity
         (not-moving-animal ?x - adult)
     )
     
@@ -335,42 +336,44 @@
     ; )
 
     ; DURATIVE - INCOMPLETE - move an animal between map segments, requires an adult person to move them
-    ; (:durative-action move-animal
-    ;     :parameters (?a - adult ?mal - animal ?l1 ?l2 - mapseg)
-    ;     :duration (= ?duration (move-duration))
-    ;     :condition (and
-    ;         ; make sure animal and adult are on the same tile
-    ;         (at start (location ?a ?l1))
-    ;         (at start (location ?mal ?l1))
-
-    ;         (over all (adj ?l1 ?l2))       ; new tile is connected to the old tile
-
-    ;         (at start (not-moving-animal ?a)) ; not already moving an animal
-
-    ;         ; check for flooding later (can't move to a flooded segment)
-    ;     )
-    ;     :effect (and
-    ;         (at start (not (not-moving-animal ?a))) ; begin moving the animal
-    ;         (at end (not-moving-animal ?a))         ; finish moving the animal
-
-    ;         ; move both adult and animal to the new tile 
-    ;         (at end (location ?a ?l2))
-    ;         (at end (location ?mal ?l2))
-    ;         ; no longer at old tile
-    ;         (at end (not(location ?a ?l1)))
-    ;         (at end (not(location ?mal ?l1)))
-
-    ;         (at end (increase (current-time) (move-duration)))
-    ;     )
-    ; )
-
-    ; DURATIVE - move person between map segments
-    (:durative-action move-person
-        :parameters (?p - person ?l1 ?l2 - mapseg)
+    (:durative-action move-animal
+        :parameters (?a - adult ?mal - animal ?l1 ?l2 - mapseg)
         :duration (= ?duration (move-duration))
         :condition (and
-            (at start (location ?p ?l1))     ; person is on the old segment 
+            ; make sure animal and adult are on the same tile
+            (at start (location ?a ?l1))
+            (at start (location ?mal ?l1))
+
+            (over all (adj ?l1 ?l2))       ; new tile is connected to the old tile
+
+            (at start (not-busy ?a))       ; not busy doing something else
+            (at start (not-moving-animal ?a)) ; not already moving an animal
+
+            ; check for flooding later (can't move to a flooded segment)
+        )
+        :effect (and
+            (at start (not (not-moving-animal ?a))) ; begin moving the animal
+            (at end (not-moving-animal ?a))         ; finish moving the animal
+
+            ; move both adult and animal to the new tile 
+            (at end (location ?a ?l2))
+            (at end (location ?mal ?l2))
+            ; no longer at old tile
+            (at end (not(location ?a ?l1)))
+            (at end (not(location ?mal ?l1)))
+
+            (at end (increase (current-time) (move-duration)))
+        )
+    )
+
+    ; DURATIVE - move person between map segments
+    (:durative-action move-adult
+        :parameters (?a - adult ?l1 ?l2 - mapseg)
+        :duration (= ?duration (move-duration))
+        :condition (and
+            (at start (location ?a ?l1))     ; person is on the old segment 
             (over all (adj ?l1 ?l2))         ; old segment is connected to new segment
+            (over all (not-moving-animal ?a))  ; person is not moving with an animal
 
             (at start (<= (current-time) (max-time)))
             ; check for flooding later (can't move to a flooded segment)
@@ -378,8 +381,8 @@
         :effect (and 
             ; not-moving
             ; not (not-moving)
-            (at end (location ?p ?l2))           ; person is now on the new segment
-            (at end (not (location ?p ?l1)))    ; person is no longer on old segment
+            (at end (location ?a ?l2))           ; person is now on the new segment
+            (at end (not (location ?a ?l1)))    ; person is no longer on old segment
 
             (at end (increase (current-time) (move-duration)))
         )

@@ -160,11 +160,11 @@
         (location whoseFarm g75)
         
         ;locations of villagers
-        (location muise g83)      ; muise begins down the road from his house
+        (location muise g82)      ; muise begins down the road from his house
         (location wallace g11)   
 
         ;location of livestock
-        (location trevor g83)    ; trevor is located on the same tile as the muise farm
+        (location trevor g82)    ; trevor is located on the same tile as the muise farm
 
         ; villager related fluents
         ;(not (not-tired muise))     ; start off tired
@@ -174,6 +174,8 @@
         (not-working wallace)       ; start off not working
         (not-moving-animal muise)
         (not-moving-animal wallace)
+        (not-busy muise)
+        (not-busy wallace)
 
         (owns muise muiseHouse)
         (owns muise muiseFarm)
@@ -228,7 +230,7 @@
     
     (:goal
         (and
-            ;(location trevor g83)      ; the sheep known as 'trevor' should be in muiseFarm
+            (location trevor g35)      ; the sheep known as 'trevor' should be in muiseFarm (g83)
             ;(tended trevor)            ; trevor the sheep should be tended to
             ;(breakfastEvent)
             ;(>= (current-time) 4)
@@ -240,7 +242,7 @@
             ;(lunchEvent)
 
             (dinnerEvent)
-            (workEvent)
+            ;(workEvent)
             
         )
     )

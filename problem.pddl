@@ -5,7 +5,7 @@
     (:objects
         g11 g12 g13 g14 g15 g16 g17 g18 g21 g22 g23 g24 g25 g26 g27 g28 g31 g32 g33 g34 g35 g36 g37 g38 g41 g42 g43 g44 g45 g46 g47 g48 g51 g52 g53 g54 g55 g56 g57 g58 g61 g62 g63 g64 g65 g66 g67 g68 g71 g72 g73 g74 g75 g76 g77 g78 g81 g82 g83 g84 g85 g86 g87 g88 - landseg
         r11 r12 r13 r14 r15 r16 r17 r18 r21 r22 r23 r24 r25 r26 r27 r28 r31 r32 r33 r34 r35 r36 r37 r38 r41 r42 r43 r44 r45 r46 r47 r48 r51 r52 r53 r54 r55 r56 r57 r58 r61 r62 r63 r64 r65 r66 r67 r68 r71 r72 r73 r74 r75 r76 r77 r78 r81 r82 r83 r84 r85 r86 r87 r88 - riverseg
-        muise wallace - adult
+        muise wallace phil - adult
         muiseHouse whoseHouse - building
         muiseFarm whoseFarm - farm
         trevor - sheep
@@ -149,7 +149,12 @@
         (adj g58 g68) (adj g68 g58)
         (adj g68 g78) (adj g78 g68)
         (adj g78 r88) (adj r88 g78)
-        
+
+        ;river segemtn related fluents
+        (not-dredged r15) (not-dredged r25) (not-dredged r26) (not-dredged r36) (not-dredged r46) (not-dredged r56)
+        (not-dredged r57) (not-dredged r67) (not-dredged r77) (not-dredged r87) (not-dredged r88)
+        (not-embanked r15) (not-embanked r25) (not-embanked r26) (not-embanked r36) (not-embanked r46) (not-embanked r56)
+        (not-embanked r57) (not-embanked r67) (not-embanked r77) (not-embanked r87) (not-embanked r88)
 
         ;locations of buildings
         (location muiseHouse g63)
@@ -160,37 +165,34 @@
         (location whoseFarm g75)
         
         ;locations of villagers
-        (location muise g82)      ; muise begins down the road from his house
-        (location wallace g11)   
+        (location muise g63)      ; muise begins down the road from his house
+        (location wallace g43)
 
         ;location of livestock
-        (location trevor g82)    ; trevor is located on the same tile as the muise farm
+        (location trevor g83)    ; trevor is located on the same tile as the muise farm
 
-        ; villager related fluents
-        ;(not (not-tired muise))     ; start off tired
-        (not-tired muise)         
-        (not (not-tired wallace))   ; start off tired
-        (not-working muise)         ; start off not working
-        (not-working wallace)       ; start off not working
-        ;(not-moving-animal muise)
-        ;(not-moving-animal wallace)
-        ;(not-busy muise)
-        ;(not-busy wallace)
-
-        ; people not moving
-        (not-moving muise)
+        ;entity related fluents
+        (not (not-tired muise))     ; start off tired  
+        (not (not-tired wallace))     
+        (not-moving muise)          ; start off not moving
         (not-moving wallace)
+        (not-busy muise)            ; start off not busy
+        (not-busy wallace)
 
-        ; animals not moving
-        (not-moving trevor)
+        ;entities not moving
+        (not-moving trevor)     ;trevor is a sheep...
+        (not-tended trevor)
 
+        ;structure related fluents
         (owns muise muiseHouse)
         (owns muise muiseFarm)
         (owns wallace whoseHouse)
         (owns wallace whoseFarm)
 
-        (damaged muiseHouse)        ; house begins damaged, needs to be repaired before use
-        (damaged whoseHouse)
+        (not-damaged muiseHouse)
+        (not-damaged muiseFarm) 
+        (not-damaged whoseHouse)
+        (not-damaged whoseFarm)
 
 
 
@@ -200,38 +202,32 @@
         (= (move-duration) 0.25)  ; it takes 15 "minutes" to move, or 1/4 of a time unit
         (= (repair-duration) 1)  ; it takes 1 hour to repair a structure
         (= (work-duration) 1)    ; it takes 1 hour to complete a work action
+        (= (embank-duration) 2)
+        (= (dredge-duration) 2.25)
 
         (= (current-time) 0)  ; the current time begins at 0
-
         (= (max-time) 24) ; max narrative duration set to 24 "hours"
 
         (= (meal-max) 3)                ; can only have 3 meals a day
-        ;(= (meal-count breakfast) 0)    ; number of meals that have been eaten, start at 0
         (= (meal-count-breakfast muise) 0)
         (= (meal-count-lunch muise) 0)
         (= (meal-count-dinner muise) 0)
-
-        (= (repair-max) 5)
-        (= (repair-count muise) 0) ; no repairs have been made yet
-        (= (repair-count wallace) 0) ; no repairs have been made yet
+        (= (meal-count-breakfast wallace) 0)
+        (= (meal-count-lunch wallace) 0)
+        (= (meal-count-dinner wallace) 0)
+        
+        (= (repair-max) 10)
+        (= (repair-count muise) 0)      ; no repairs have been made yet
+        (= (repair-count wallace) 0)
 
         (= (tend-animal-count muise) 0)
         (= (tend-animal-count wallace) 0)
-
-        (= (work-max) 5)
+        
+        (= (work-max) 10)
         (= (work-count muise) 0)
         (= (work-count wallace) 0)
 
-
-        ;(= (event-duration mealLength) 1) ;
-
-        ; nots
-        (not-eating)
-        (not (not-damaged muiseHouse)) ; muise house begins damaged
-        (not-damaged muiseFarm) 
-        (not (not-damaged whoseHouse)) ; whose house also begins damaged
-        (not-damaged whoseFarm)
-
+        (= (total-flood-struct) 0)
 
     )
     
@@ -241,8 +237,8 @@
             ;(tended trevor)           ; trevor the sheep should be tended to
             ;(breakfastEvent)
             ;(>= (current-time) 4)
-            ; (>= (meal-count breakfast) 3)
-            ; (<= (meal-count breakfast) 5)
+            ;(>= (meal-count breakfast) 3)
+            ;(<= (meal-count breakfast) 5)
 
             ;(= (meal-count breakfast) 2)
             ;(not-tired muise)
@@ -253,6 +249,8 @@
             ;(workEvent)
 
             (tendAnimalEvent)
+
+            ;(>= (total-flood-struct) 2) ;dosen't like more then 2 structures
             
         )
     )

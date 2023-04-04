@@ -36,13 +36,12 @@
 
         ; -- Conditions --
         ; map segment conditions
-        (embankment ?x - riverseg) ; has a river segment been embanked?
-        (dredge ?x - riverseg)     ; has a river segment been dredged?
+        (not-embanked ?x - riverseg) ; has a river segment been embanked?
+        (not-dredged ?x - riverseg)     ; has a river segment been dredged?
         (lowground ?x - landseg)         ; is a land segment lowground? Decides whether it can be flooded or not
         ;(flooded ?x - mapseg)            ; is a map segment flooded?
         (damaged ?x - structure)           ; confirms damaged structure - how we apply flood damage will impact the repair action
-        (not-damaged ?x - structure)   ; is a structure damaged?
-        (not-tired ?x - person)    ; is a person tired? (people become tired from doing things)             
+        (not-damaged ?x - structure)   ; is a structure damaged? 
         (not-tended ?x - animal)      ; are my crops watered and my sheep tended?          
 
         ; -- Scenes -- 
@@ -58,11 +57,11 @@
 
 
         ; -- Time --
-        (not-eating)
-        (not-working ?x - adult)
         (not-busy ?x - person) ; make sure person is not doing another activity
-        ;(not-moving-animal ?x - adult) ; a relic from ancient times
         (not-moving ?x - entity)
+        (not-tired ?x - person)    ; is a person tired? (people become tired from doing things) 
+        ;(not-moving-animal ?x - adult) ; a relic from ancient times
+        
     )
     
     (:functions
@@ -93,6 +92,10 @@
 
         (work-duration)
 
+        (total-flood-struct)
+        (dredge-duration)
+        (embank-duration)
+
         ;(event-duration ?l - length)
         ;(meal-count ?e - event)      ; meals consumed so far in this narrative - maybe switch to event-count?
     
@@ -100,24 +103,41 @@
 
     ; Action Scenes - actions that represents different components of the curriculum that can be 
     ;                 combined to form a narrative
-    
-    ; ; have an adult dredge a river segment to prevent it from flooding
-    ; (:action dredgingScene
-    ;     :parameters (?a - adult  ?r - riverseg) 
-    
-    ;   :precondition (and
-    ;         (not (dredgeEvent))         ; this event hasn't already occured in the scene
-    ;         (not (dredge ?r))           ; river must not have been dredged already
-    ;         (not (embankment ?r))       ; river is not already embanked
-    ;         (location ?a ?r)            ; adult must be at the location 
-    ;     )
 
-    ;     :effect (and
-    ;         (dredge ?r)                 ; river is dredged
-    ;         (dredgeEvent)               ; a dredging event has occured
-    ;     )
-    ; )
-    
+    ; DURATIVE - have an adult dredge a river segment to prevent it from flooding
+    (:durative-action dredgingScene
+        :parameters (?r - riverseg ?a - adult)
+        :duration (= ?duration (dredge-duration))
+        :condition (and
+            ; make sure an adult person is on a river segment
+            (over all (location ?a ?r))
+
+            (at start (not-dredged ?r))     ; river segment hasn't already been dredged
+            (at start (not-embanked ?r))     ; river segment hasn't already been embanked
+
+            (at start (not-busy ?a))        ; not already busy
+
+            (at start (not-tired ?a))       ; not already tired
+
+            (at start (<= (current-time) (max-time)))
+            (at start (<= (work-count ?a) (work-max)))    ; adult has not done more than the work limit
+            
+        )
+        :effect (and 
+            (at start (not (not-busy ?a)))     ; become busy
+            (at end (not-busy ?a))             ; no longer busy
+
+            (at end (dredgeEvent))             ; there has now been a dredge scene
+
+            (at start (not (not-dredged ?r)))    ; river segment now dredged (have to do at start or multiple people will try dredging the same thing lol)
+            (at end (not (not-tired ?a)))      ; adult now tired
+
+            (at end (increase (total-flood-struct) 1))        ; increase number of flood structures
+            (at end (increase (current-time) (dredge-duration)))
+            (at end (increase (work-count ?a) 1))  
+        )
+    )  
+
     ; ; have an adult embank a river segment to prevent it from flooding
     ; (:action embankingScene
     ;     :parameters (?a - adult  ?r - riverseg)
@@ -136,6 +156,40 @@
     
     ; )
 
+    ; DURATIVE - have an adult dredge a river segment to prevent it from flooding
+    (:durative-action embankingScene
+        :parameters (?r - riverseg ?a - adult)
+        :duration (= ?duration (embank-duration))
+        :condition (and
+            ; make sure an adult person is on a river segment
+            (over all (location ?a ?r))
+
+            (at start (not-embanked ?r))     ; river segment hasn't already been embanked
+            (at start (not-dredged ?r))     ; river segment hasn't already been dredged
+
+            (at start (not-busy ?a))        ; not already busy
+
+            (at start (not-tired ?a))       ; not already tired
+
+            (at start (<= (current-time) (max-time)))
+            (at start (<= (work-count ?a) (work-max)))    ; adult has not done more than the work limit
+            
+        )
+        :effect (and 
+            (at start (not (not-busy ?a)))     ; become busy
+            (at end (not-busy ?a))             ; no longer busy
+
+            (at end (embankEvent))             ; there has now been a dredge scene
+
+            (at start (not (not-embanked ?r)))    ; river segment now embanked (have to do at start or multiple people will try embanked the same thing lol)
+            (at end (not (not-tired ?a)))      ; adult now tired
+
+            (at end (increase (total-flood-struct) 1))        ; increase number of flood structures
+            (at end (increase (current-time) (embank-duration)))
+            (at end (increase (work-count ?a) 1))  
+        )
+    )  
+
     ; DURATIVE - have a breakfast scene to remove the tired condition from a person
     (:durative-action breakfastScene
         :parameters (?l - landseg ?p - person ?h - building)
@@ -144,10 +198,13 @@
             ; make sure the person and the building are both on the same land segment
             (over all (location ?p ?l))
             (over all (location ?h ?l))                 ; assume if entity on same tile as building, they may use it
-            (at start (not-eating))                     ; not already eating a meal
+
+            (at start (not-busy ?p))                    ; not already busy
+
             (at start (= (meal-count-breakfast ?p) 0))  ; a breakfast has not yet occured     
             (at start (= (meal-count-lunch ?p) 0))      ; a lunch has not yet occured
             (at start (= (meal-count-dinner ?p) 0))     ; a dinner has not yet occured
+
             (over all (not-damaged ?h))                 ; can't eat in a damaged building
             (over all (owns ?p ?h))                     ; person lives in this building
 
@@ -155,11 +212,12 @@
             (at start (<= (meal-count-breakfast ?p) (meal-max)))
         )
         :effect (and 
-            (at start (not(not-eating)))     ; begin eating
+            (at start (not (not-busy ?p)))     ; become busy
+            (at end (not-busy ?p))           ; no longer busy
+
             (at end (breakfastEvent))        ; there has now been a breakfast event
             (at end (not-tired ?p))          ; person is no longer tired (perhaps change this to apply for everyone on the tile? group meal!)
 
-            (at end (not-eating))            ; no longer eating
             (at end (increase (current-time) (meal-duration)))
             (at end (increase (meal-count-breakfast ?p) 1))  
         )
@@ -173,7 +231,9 @@
             ; make sure the person and the building are both on the same land segment
             (over all (location ?p ?l))
             (over all (location ?h ?l))                 ; assume if entity on same tile as building, they may use it
-            (at start (not-eating))                     ; not already eating a meal
+
+            (at start (not-busy ?p))                    ; not already busy
+
             (at start (= (meal-count-breakfast ?p) 1))  ; a breakfast has occured 
             (at start (= (meal-count-lunch ?p) 0))      ; a lunch has not yet occured
             (at start (= (meal-count-dinner ?p) 0))     ; a dinner has not yet occured
@@ -184,11 +244,12 @@
             (at start (<= (meal-count-lunch ?p) (meal-max)))
         )
         :effect (and 
-            (at start (not(not-eating)))     ; begin eating
+            (at start (not (not-busy ?p)))     ; become busy
+            (at end (not-busy ?p))           ; no longer busy
+
             (at end (lunchEvent))            ; there has now been a breakfast event
             (at end (not-tired ?p))          ; person is no longer tired (perhaps change this to apply for everyone on the tile? group meal!)
-
-            (at end (not-eating))            ; no longer eating
+            
             (at end (increase (current-time) (meal-duration)))
             (at end (increase (meal-count-lunch ?p) 1))  
         )
@@ -202,7 +263,9 @@
             ; make sure the person and the building are both on the same land segment
             (over all (location ?p ?l))
             (over all (location ?h ?l))                 ; assume if entity on same tile as building, they may use it
-            (at start (not-eating))                     ; not already eating a meal
+
+            (at start (not-busy ?p))                    ; not already busy
+
             (at start (= (meal-count-breakfast ?p) 1))  ; a breakfast has not yet occured
             (at start (= (meal-count-lunch ?p) 1))      ; a lunch has not yet occured
             (at start (= (meal-count-dinner ?p) 0))     ; a dinner has not yet occured
@@ -213,11 +276,12 @@
             (at start (<= (meal-count-dinner ?p) (meal-max)))
         )
         :effect (and 
-            (at start (not(not-eating)))     ; begin eating
+            (at start (not (not-busy ?p)))     ; become busy
+            (at end (not-busy ?p))           ; no longer busy
+
             (at end (dinnerEvent))           ; there has now been a breakfast event
             (at end (not-tired ?p))          ; person is no longer tired (perhaps change this to apply for everyone on the tile? group meal!)
 
-            (at end (not-eating))            ; no longer eating
             (at end (increase (current-time) (meal-duration)))
             (at end (increase (meal-count-dinner ?p) 1))  
         )
@@ -232,17 +296,18 @@
             (over all (location ?f ?l))
             (over all (location ?a ?l))    ; assume if entity on same tile as the farm, they may use it
 
+            (at start (not-busy ?a))       ; not already busy
+
             (at start (not-damaged ?f))   ; farm is not damaged
             (at start (not-tired ?a))     ; adult is not tired
             (over all (owns ?a ?f))       ; person owns this farm
 
-            (at start (not-working ?a))  
             (at start (<= (current-time) (max-time)))
             (at start (<= (work-count ?a) (work-max)))    ; adult has not done more than the work limit
         )
         :effect (and 
-            (at start (not (not-working ?a)))  ; start working
-            (at end (not-working ?a))          ; finish working
+            (at start (not (not-busy ?a)))     ; become busy
+            (at end (not-busy ?a))           ; no longer busy
 
             (at end (not (not-tired ?a)))  ; adult is now tired
             (at end (workEvent))           ; work scene has now occured
@@ -252,26 +317,6 @@
 
         )
     )
-
-    ; ; execute a animal tending scene where an adult becomes tired, but an animal is tended to
-    ; (:action tendAnimalScene
-    ;     :parameters (?mal - animal ?a - adult ?l - landseg ?f - farm)
-    ;     :precondition (and 
-    ;         ; make sure the adult, animal and farm are all on the same land segment
-    ;         (location ?a ?l)
-    ;         (location ?mal ?l)
-    ;         (location ?f ?l)    ; assume if entity on same tile as the farm, they may use it
-
-    ;         (not(tended ?mal))  ; animal has not already been tended to
-    ;         (not(tired ?a))     ; adult is not tired
-    ;         (owns ?a ?f)        ; person owns this farm
-    ;     )
-    ;     :effect (and
-    ;         (tendAnimalEvent)   ; tending to animal event has now occured
-    ;         (tended ?mal)       ; animal has now been tended to
-    ;         (tired ?a)          ; adult is now tired
-    ;     )
-    ; )
 
     ;DURATIVE - execute a animal tending scene where an adult becomes tired, but an animal is tended to
     (:durative-action tendAnimalScene
@@ -287,21 +332,21 @@
             (at start (not-tired ?a))     ; adult is not tired
             ;(over all (owns ?a ?f))       ; person owns this farm  - person owns, not adult
 
-            (at start (not-working ?a))   ; adult is not already working
-            (at start (not-moving ?a))   ; adult is not moving
-            (at start (not-moving ?mal))  ; animal is not moving
+            (at start (not-busy ?a))       ; not already busy
+
+            (at start (not-moving ?a))      ; adult is not moving
+            (at start (not-moving ?mal))    ; animal is not moving
 
             (at start (<= (current-time) (max-time)))
             ;(at start (<= (work-count ?a) (work-max)))    ; adult has not done more than the work limit
             (at start (<= (tend-animal-count ?a) (work-max)))   ; can only tend animals as many times as the work limit will allow
         )
         :effect (and
-
-            (at start (not (not-working ?a))) ; begin working
-            (at end (not-working ?a))         ; finish working
+            (at start (not (not-busy ?a)))     ; become busy
+            (at end (not-busy ?a))           ; no longer busy
 
             (at end (tendAnimalEvent))   ; tending to animal event has now occured
-            ;(at end (workEvent))    ; a work event has occured
+
             (at end (not (not-tended ?mal)))       ; animal has now been tended to
             (at end (not (not-tired ?a)))          ; adult is now tired
 
@@ -325,7 +370,7 @@
 
             (over all (adj ?l1 ?l2))       ; new tile is connected to the old tile
 
-            ;(at start (not-busy ?a))       ; not busy doing something else
+            (at start (not-busy ?a))       ; not busy doing something else
 
             (at start (not-moving ?a))     ; not already moving in general
             (at start (not-moving ?mal))   ; animal is not already being moved
@@ -339,6 +384,9 @@
 
             (at end (not-moving ?a))     ; person finished moving
             (at end (not-moving ?mal))   ; animal finished moving
+
+            (at start (not (not-busy ?a)))     ; become busy
+            (at end (not-busy ?a))           ; no longer busy
 
             ; move both adult and animal to the new tile 
             (at end (location ?a ?l2))
@@ -358,14 +406,20 @@
         :condition (and
             (at start (location ?p ?l1))     ; person is on the old segment 
             (over all (adj ?l1 ?l2))         ; old segment is connected to new segment
+
+            (at start (not-busy ?p))
             (at start (not-moving ?p))       ; person is not already moving
 
             (at start (<= (current-time) (max-time)))
             ; check for flooding later (can't move to a flooded segment)
         )
         :effect (and 
+            (at start (not (not-busy ?p)))     ; become busy
+            (at end (not-busy ?p))           ; no longer busy
+
             (at start (not (not-moving ?p)))   ; person begins moving
             (at end (not-moving ?p))           ; person finishes moving
+
             (at end (location ?p ?l2))         ; person is now on the new segment
             (at end (not (location ?p ?l1)))   ; person is no longer on old segment
 
@@ -385,18 +439,17 @@
             (at start (damaged ?s))       ; structure is damaged
             (at start (not-tired ?a))     ; adult is not tired
 
-            (at start (not-working ?a))   ; adult is not already working
+            (at start (not-busy ?a))   ; adult is not already working
  
             (at start (<= (repair-count ?a) (repair-max))) ; this person has not completed more the max repairs today
 
             (at start (<= (current-time) (max-time)))
         )
         :effect (and 
-            (at start (not (not-working ?a)))  ; begin working
-            
-            (at end (not-working ?a))          ; finished working
+            (at start (not (not-busy ?a)))     ; become busy
+            (at end (not-busy ?a))             ; no longer busy
 
-            (at end (not-damaged ?s))  ; structure is not-damaged
+            (at end (not-damaged ?s))        ; structure is not-damaged
             (at end (not (damaged ?s)))      ; structure is not (damaged)  - doubled up, pick one when flood damage is applied
             (at end (not (not-tired ?a)))    ; adult is now tired
 

@@ -507,10 +507,19 @@
         :condition (and 
             (at start (< (total-flood-struct) 1))   ; number of flood structures is not enough to prevent the flood (<1)
             (at start (<= (current-time) (max-time)))
-            
-            
         )
         :effect (and 
+
+            (at start (floodingEvent))
+
+            (at start (forall (?t - mapseg)
+                (when (and (lowground ?t))
+                    (and
+                        (flooded ?t)
+                    )
+                )
+            ))
+
             (at end (increase (current-time) (flood-duration)))
 
             ; all people are busy

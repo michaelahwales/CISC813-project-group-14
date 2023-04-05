@@ -204,6 +204,7 @@
         (= (work-duration) 1)    ; it takes 1 hour to complete a work action
         (= (embank-duration) 2)
         (= (dredge-duration) 2.25)
+        (= (flood-duration) 5)  
 
         (= (current-time) 0)  ; the current time begins at 0
         (= (max-time) 24) ; max narrative duration set to 24 "hours"
@@ -249,6 +250,9 @@
             ;(workEvent)
 
             (tendAnimalEvent)
+
+            ; goal must be set to have a flood receeding scene if you want the flood event to happen
+            ; for successful flood Prevention Event
 
             ;(>= (total-flood-struct) 2) ;dosen't like more then 2 structures
             

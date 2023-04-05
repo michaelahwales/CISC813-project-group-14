@@ -38,15 +38,16 @@
         ; map segment conditions
         (not-embanked ?x - riverseg) ; has a river segment been embanked?
         (not-dredged ?x - riverseg)     ; has a river segment been dredged?
-        (lowground ?x - landseg)         ; is a land segment lowground? Decides whether it can be flooded or not
-        ;(flooded ?x - mapseg)            ; is a map segment flooded?
+        (lowground ?x - mapseg)         ; is a land segment lowground? Decides whether it can be flooded or not
+        (flooded ?x - mapseg)            ; is a map segment flooded?
         (damaged ?x - structure)           ; confirms damaged structure - how we apply flood damage will impact the repair action
         (not-damaged ?x - structure)   ; is a structure damaged? 
         (not-tended ?x - animal)      ; are my crops watered and my sheep tended?          
 
         ; -- Scenes -- 
         ; scene fluents to specify scenario goals, which would be decided by what requirements are in the curriculum
-        ;(floodingEvent)           ; does a flooding event occur in this scenario?
+        (floodingEvent)           ; does a flooding event occur in this scenario?
+        (preventedFloodingEvent)    ; is a flood successfully prevented in this scenario?
         (dredgeEvent)       ; does a dredge event occur in this scenario? 
         (embankEvent)       ; does a embankment event occur in this scenario?
         (breakfastEvent)    ; does a breakfast event occur in this scenario?
@@ -54,6 +55,7 @@
         (dinnerEvent)       ; does a dinner event occur in this scenario?
         (workEvent)             ; does a work event occur in this scenario?
         (tendAnimalEvent)       ; does a tending animal event occur in this scenario?
+        
 
 
         ; -- Time --
@@ -95,6 +97,8 @@
         (total-flood-struct)
         (dredge-duration)
         (embank-duration)
+
+        (flood-duration)
 
         ;(event-duration ?l - length)
         ;(meal-count ?e - event)      ; meals consumed so far in this narrative - maybe switch to event-count?
@@ -497,10 +501,44 @@
     ;     )
     ; )
 
+    (:durative-action floodingScene
+        :parameters ()
+        :duration (= ?duration flood-duration)
+        :condition (and 
+            (at start (< (total-flood-struct) 1))   ; number of flood structures is not enough to prevent the flood (<1)
+            (at start (<= (current-time) (max-time)))
+            
+            
+        )
+        :effect (and 
+            (at end (increase (current-time) (flood-duration)))
+
+            ; all people are busy
+            ; all people are removed from flooded segments
+            ; all animals are removed from flooded segments
+            ; all structures on flooded segments are damaged
+
+        )
+    )
+
     ; (:action recedingfloodScene()
     ;     :parameters ()
     ;     :precondition (and )
     ;     :effect (and )
+    ; )
+    
+
+    ; (:durative-action preventedFloodingScene
+    ;     :parameters (
+    ;         ()
+    ;     )
+    ;     :precondition (and
+    ;         ()
+    ;     )
+    ;     :effect (and 
+    ;         ()
+
+    ;     )
     ; )
       
 )

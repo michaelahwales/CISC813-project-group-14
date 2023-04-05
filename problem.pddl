@@ -150,11 +150,21 @@
         (adj g68 g78) (adj g78 g68)
         (adj g78 r88) (adj r88 g78)
 
-        ;river segemtn related fluents
+        ;identify which river segments have flood structures on them
         (not-dredged r15) (not-dredged r25) (not-dredged r26) (not-dredged r36) (not-dredged r46) (not-dredged r56)
         (not-dredged r57) (not-dredged r67) (not-dredged r77) (not-dredged r87) (not-dredged r88)
         (not-embanked r15) (not-embanked r25) (not-embanked r26) (not-embanked r36) (not-embanked r46) (not-embanked r56)
         (not-embanked r57) (not-embanked r67) (not-embanked r77) (not-embanked r87) (not-embanked r88)
+
+        ;identify which tiles are low ground and therefore floodable
+        (lowground g11) (lowground g12) (lowground g13) (lowground g14) (lowground r15) (lowground g16) (lowground g17) (lowground g18)
+        (lowground g21) (lowground g22) (lowground g23) (lowground g24) (lowground r25) (lowground r26) (lowground g27) (lowground g28)
+        (lowground g31) (lowground g32) (lowground g33) (lowground g34) (lowground g35) (lowground r36) (lowground g37) (lowground g38)
+        (lowground g41) (lowground g42) (lowground g43) (lowground g44) (lowground g45) (lowground r46) (lowground g47) (lowground g48)
+                                        (lowground g53) (lowground g54) (lowground g55) (lowground r56) (lowground r57) (lowground g58)
+                                                        (lowground g64) (lowground g65) (lowground g66) (lowground r67) (lowground g68)
+                                                        (lowground g74) (lowground g75) (lowground g76) (lowground r77) (lowground g78)
+                                                                        (lowground g85) (lowground g86) (lowground r87) (lowground r88)
 
         ;locations of buildings
         (location muiseHouse g63)

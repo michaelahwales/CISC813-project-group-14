@@ -13,11 +13,12 @@
         :duration-inequalities
         :equality
         :fluents
+        :universal-preconditions
     )
 
     (:types
         mapseg locatable - object
-        riverseg landseg - mapseg
+        riverseg landseg lowgroundseg - mapseg
         structure entity - locatable
         building farm - structure
         animal person - entity
@@ -140,27 +141,9 @@
             (at end (increase (current-time) (dredge-duration)))
             (at end (increase (work-count ?a) 1))  
         )
-    )  
+    )
 
-    ; ; have an adult embank a river segment to prevent it from flooding
-    ; (:action embankingScene
-    ;     :parameters (?a - adult  ?r - riverseg)
-
-    ;     :precondition (and 
-    ;         (not (embankEvent))         ; this event hasn't already occured in the scene
-    ;         (not (dredge ?r))           ; river must not have been dredged already
-    ;         (not (embankment ?r))       ; river is not already embanked
-    ;         (location ?a ?r)            ; adult must be at the location 
-    ;     )
-
-    ;     :effect (and 
-    ;         (embankment ?r)             ; river is embanked
-    ;         (embankEvent)               ; an embanking event has occured
-    ;     )
-    
-    ; )
-
-    ; DURATIVE - have an adult dredge a river segment to prevent it from flooding
+    ; DURATIVE - have an adult embank a river segment to prevent it from flooding
     (:durative-action embankingScene
         :parameters (?r - riverseg ?a - adult)
         :duration (= ?duration (embank-duration))
@@ -512,13 +495,10 @@
 
             (at start (floodingEvent))
 
-            (at start (forall (?t - mapseg)
-                (when (and (lowground ?t))
-                    (and
-                        (flooded ?t)
-                    )
-                )
-            ))
+            (forall (?t - landseg) (at start (flooded ?t)))
+            (forall (?s - structure) (at end (not (not-damaged ?s))))
+            (forall (?p - person) (at end (not (not-tired ?p))))
+            (forall (?a - animal)  (at end (not (not-tended ?a))))
 
             (at end (increase (current-time) (flood-duration)))
 

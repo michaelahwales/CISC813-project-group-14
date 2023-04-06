@@ -5,7 +5,7 @@
     (:objects
         g11 g12 g13 g14 g15 g16 g17 g18 g21 g22 g23 g24 g25 g26 g27 g28 g31 g32 g33 g34 g35 g36 g37 g38 g41 g42 g43 g44 g45 g46 g47 g48 g51 g52 g53 g54 g55 g56 g57 g58 g61 g62 g63 g64 g65 g66 g67 g68 g71 g72 g73 g74 g75 g76 g77 g78 g81 g82 g83 g84 g85 g86 g87 g88 - landseg
         r11 r12 r13 r14 r15 r16 r17 r18 r21 r22 r23 r24 r25 r26 r27 r28 r31 r32 r33 r34 r35 r36 r37 r38 r41 r42 r43 r44 r45 r46 r47 r48 r51 r52 r53 r54 r55 r56 r57 r58 r61 r62 r63 r64 r65 r66 r67 r68 r71 r72 r73 r74 r75 r76 r77 r78 r81 r82 r83 r84 r85 r86 r87 r88 - riverseg
-        muise wallace phil - adult
+        muise wallace - adult
         muiseHouse whoseHouse - building
         muiseFarm whoseFarm - farm
         trevor - sheep
@@ -157,14 +157,14 @@
         (not-embanked r57) (not-embanked r67) (not-embanked r77) (not-embanked r87) (not-embanked r88)
 
         ;identify which tiles are low ground and therefore floodable
-        (lowground g11) (lowground g12) (lowground g13) (lowground g14) (lowground r15) (lowground g16) (lowground g17) (lowground g18)
-        (lowground g21) (lowground g22) (lowground g23) (lowground g24) (lowground r25) (lowground r26) (lowground g27) (lowground g28)
-        (lowground g31) (lowground g32) (lowground g33) (lowground g34) (lowground g35) (lowground r36) (lowground g37) (lowground g38)
-        (lowground g41) (lowground g42) (lowground g43) (lowground g44) (lowground g45) (lowground r46) (lowground g47) (lowground g48)
-                                        (lowground g53) (lowground g54) (lowground g55) (lowground r56) (lowground r57) (lowground g58)
-                                                        (lowground g64) (lowground g65) (lowground g66) (lowground r67) (lowground g68)
-                                                        (lowground g74) (lowground g75) (lowground g76) (lowground r77) (lowground g78)
-                                                                        (lowground g85) (lowground g86) (lowground r87) (lowground r88)
+        ; (lowground g11) (lowground g12) (lowground g13) (lowground g14) (lowground r15) (lowground g16) (lowground g17) (lowground g18)
+        ; (lowground g21) (lowground g22) (lowground g23) (lowground g24) (lowground r25) (lowground r26) (lowground g27) (lowground g28)
+        ; (lowground g31) (lowground g32) (lowground g33) (lowground g34) (lowground g35) (lowground r36) (lowground g37) (lowground g38)
+        ; (lowground g41) (lowground g42) (lowground g43) (lowground g44) (lowground g45) (lowground r46) (lowground g47) (lowground g48)
+        ;                                 (lowground g53) (lowground g54) (lowground g55) (lowground r56) (lowground r57) (lowground g58)
+        ;                                                 (lowground g64) (lowground g65) (lowground g66) (lowground r67) (lowground g68)
+        ;                                                 (lowground g74) (lowground g75) (lowground g76) (lowground r77) (lowground g78)
+        ;                                                                 (lowground g85) (lowground g86) (lowground r87) (lowground r88)
 
         ;locations of buildings
         (location muiseHouse g63)
@@ -259,10 +259,13 @@
             ;(dinnerEvent)
             ;(workEvent)
 
-            (tendAnimalEvent)
+            ;(tendAnimalEvent)
 
             ; goal must be set to have a flood receeding scene if you want the flood event to happen
             ; for successful flood Prevention Event
+
+            (floodingEvent)
+            (tendAnimalEvent)
 
             ;(>= (total-flood-struct) 2) ;dosen't like more then 2 structures
             

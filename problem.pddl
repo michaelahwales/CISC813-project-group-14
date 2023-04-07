@@ -6,6 +6,7 @@
         g11 g12 g13 g14 g15 g16 g17 g18 g21 g22 g23 g24 g25 g26 g27 g28 g31 g32 g33 g34 g35 g36 g37 g38 g41 g42 g43 g44 g45 g46 g47 g48 g51 g52 g53 g54 g55 g56 g57 g58 g61 g62 g63 g64 g65 g66 g67 g68 g71 g72 g73 g74 g75 g76 g77 g78 g81 g82 g83 g84 g85 g86 g87 g88 - landseg
         r11 r12 r13 r14 r15 r16 r17 r18 r21 r22 r23 r24 r25 r26 r27 r28 r31 r32 r33 r34 r35 r36 r37 r38 r41 r42 r43 r44 r45 r46 r47 r48 r51 r52 r53 r54 r55 r56 r57 r58 r61 r62 r63 r64 r65 r66 r67 r68 r71 r72 r73 r74 r75 r76 r77 r78 r81 r82 r83 r84 r85 r86 r87 r88 - riverseg
         muise wallace - adult
+        mini_muise wallace_jr - child
         muiseHouse whoseHouse - building
         muiseFarm whoseFarm - farm
         trevor - sheep
@@ -157,14 +158,15 @@
         (not-embanked r57) (not-embanked r67) (not-embanked r77) (not-embanked r87) (not-embanked r88)
 
         ;identify which tiles are low ground and therefore floodable
-        ; (lowground g11) (lowground g12) (lowground g13) (lowground g14) (lowground r15) (lowground g16) (lowground g17) (lowground g18)
-        ; (lowground g21) (lowground g22) (lowground g23) (lowground g24) (lowground r25) (lowground r26) (lowground g27) (lowground g28)
-        ; (lowground g31) (lowground g32) (lowground g33) (lowground g34) (lowground g35) (lowground r36) (lowground g37) (lowground g38)
-        ; (lowground g41) (lowground g42) (lowground g43) (lowground g44) (lowground g45) (lowground r46) (lowground g47) (lowground g48)
-        ;                                 (lowground g53) (lowground g54) (lowground g55) (lowground r56) (lowground r57) (lowground g58)
-        ;                                                 (lowground g64) (lowground g65) (lowground g66) (lowground r67) (lowground g68)
-        ;                                                 (lowground g74) (lowground g75) (lowground g76) (lowground r77) (lowground g78)
-        ;                                                                 (lowground g85) (lowground g86) (lowground r87) (lowground r88)
+        (not-just-flooded)
+        (not-flooded g11) (not-flooded g12) (not-flooded g13) (not-flooded g14) (not-flooded r15) (not-flooded g16) (not-flooded g17) (not-flooded g18)
+        (not-flooded g21) (not-flooded g22) (not-flooded g23) (not-flooded g24) (not-flooded r25) (not-flooded r26) (not-flooded g27) (not-flooded g28)
+        (not-flooded g31) (not-flooded g32) (not-flooded g33) (not-flooded g34) (not-flooded g35) (not-flooded r36) (not-flooded g37) (not-flooded g38)
+        (not-flooded g41) (not-flooded g42) (not-flooded g43) (not-flooded g44) (not-flooded g45) (not-flooded r46) (not-flooded g47) (not-flooded g48)
+        (not-flooded g51) (not-flooded g52) (not-flooded g53) (not-flooded g54) (not-flooded g55) (not-flooded r56) (not-flooded r57) (not-flooded g58)
+        (not-flooded g61) (not-flooded g62) (not-flooded g63) (not-flooded g64) (not-flooded g65) (not-flooded g66) (not-flooded r67) (not-flooded g68)
+        (not-flooded g71) (not-flooded g72) (not-flooded g73) (not-flooded g74) (not-flooded g75) (not-flooded g76) (not-flooded r77) (not-flooded g78)
+        (not-flooded g81) (not-flooded g82) (not-flooded g83) (not-flooded g84) (not-flooded g85) (not-flooded g86) (not-flooded r87) (not-flooded r88)
 
         ;locations of buildings
         (location muiseHouse g63)
@@ -177,6 +179,8 @@
         ;locations of villagers
         (location muise g63)      ; muise begins down the road from his house
         (location wallace g43)
+        (location mini_muise g63)
+        (location wallace_jr g43)
 
         ;location of livestock
         (location trevor g83)    ; trevor is located on the same tile as the muise farm
@@ -189,6 +193,13 @@
         (not-busy muise)            ; start off not busy
         (not-busy wallace)
 
+        (not (not-tired mini_muise))     ; start off tired  
+        (not (not-tired wallace_jr))     
+        (not-moving mini_muise)          ; start off not moving
+        (not-moving wallace_jr)
+        (not-busy mini_muise)            ; start off not busy
+        (not-busy wallace_jr)
+
         ;entities not moving
         (not-moving trevor)     ;trevor is a sheep...
         (not-tended trevor)
@@ -196,13 +207,21 @@
         ;structure related fluents
         (owns muise muiseHouse)
         (owns muise muiseFarm)
+        (owns mini_muise muiseHouse)
+        (owns mini_muise muiseFarm)
         (owns wallace whoseHouse)
         (owns wallace whoseFarm)
+        (owns wallace_jr whoseHouse)
+        (owns wallace_jr whoseFarm)
 
         (not-damaged muiseHouse)
         (not-damaged muiseFarm) 
         (not-damaged whoseHouse)
         (not-damaged whoseFarm)
+        (not (damaged muiseHouse))
+        (not (damaged muiseFarm))
+        (not (damaged whoseHouse))
+        (not (damaged whoseFarm))
 
 
 
@@ -210,11 +229,13 @@
         ; -- durations --
         (= (meal-duration) 1)    ; the length of a meal is 1 "hour"
         (= (move-duration) 0.25)  ; it takes 15 "minutes" to move, or 1/4 of a time unit
+        (= (move-animal-duration) 0.50)  ; it takes 15 "minutes" to move, or 1/4 of a time unit
         (= (repair-duration) 1)  ; it takes 1 hour to repair a structure
         (= (work-duration) 1)    ; it takes 1 hour to complete a work action
         (= (embank-duration) 2)
         (= (dredge-duration) 2.25)
         (= (flood-duration) 5)  
+        (= (reced-duration) 1) 
 
         (= (current-time) 0)  ; the current time begins at 0
         (= (max-time) 24) ; max narrative duration set to 24 "hours"
@@ -264,10 +285,11 @@
             ; goal must be set to have a flood receeding scene if you want the flood event to happen
             ; for successful flood Prevention Event
 
-            (floodingEvent)
-            (tendAnimalEvent)
+            ;(preventedFloodingEvent)
+            ;(tendAnimalEvent)
+            (playEvent)
 
-            ;(>= (total-flood-struct) 2) ;dosen't like more then 2 structures
+            ;(= (total-flood-struct) 3)
             
         )
     )

@@ -370,6 +370,8 @@
 
             (at start (not-busy ?c1))
             (at start (not-busy ?c2))
+            (at start (not-tired ?c1))
+            (at start (not-tired ?c2))
             (at start (not-moving ?c1))       ; person is not already moving
             (at start (not-moving ?c2))
 

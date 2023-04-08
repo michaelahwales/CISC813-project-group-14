@@ -22,11 +22,8 @@
         structure entity - locatable
         building farm - structure
         animal person - entity
-        cow dog pig sheep - animal
+        cow pig sheep - animal
         adult child - person
-
-        event
-        length
     )
     
     (:predicates
@@ -35,12 +32,10 @@
         (adj ?x1 ?x2 - mapseg)                ; adjacency relationship for map segments
         (owns ?x - person ?y - structure)         ; ownership for structures
 
-
         ; -- Conditions --
         ; map segment conditions
         (not-embanked ?x - riverseg) ; has a river segment been embanked?
         (not-dredged ?x - riverseg)     ; has a river segment been dredged?
-        (lowground ?x - mapseg)         ; is a land segment lowground? Decides whether it can be flooded or not
         (not-flooded ?x - mapseg)            ; is a map segment flooded?
         (damaged ?x - structure)           ; confirms damaged structure - how we apply flood damage will impact the repair action
         (not-damaged ?x - structure)   ; is a structure damaged? 
@@ -59,7 +54,6 @@
         (workEvent)             ; does a work event occur in this scenario?
         (tendAnimalEvent)       ; does a tending animal event occur in this scenario?
         (playEvent)
-        
 
         ; -- Time --
         (not-busy ?x - person) ; make sure person is not doing another activity
@@ -71,10 +65,8 @@
     
     (:functions
 
-        ; -- 
-        ;(scenario-length) ; the length of the finished scenario 
+        ; -- Narrative Length --
         (max-time) ; the maximum length a narrative (set of scenes) is allowed to be 
-
         (current-time)  ; how long the story has taken so far
 
         ; -- Event Timings --
@@ -83,30 +75,24 @@
         (meal-count-lunch ?p - person)
         (meal-count-dinner ?p - person)
         (meal-max)  ; maximum number of meals that may be consumed in a day
-
-        (repair-duration)     ; replace this with one work duration for work actions?
+        
         (repair-count ?a - adult)
-        (repair-max)
-
         (tend-animal-count ?a - adult)
-        (move-animal-duration)
-
         (work-count ?a - adult)
-        (work-max)
 
         (move-duration)
-
+        (move-animal-duration)
         (work-duration)
-
-        (total-flood-struct)
+        (repair-duration)
         (dredge-duration)
         (embank-duration)
-
         (flood-duration)
         (reced-duration)
 
-        ;(event-duration ?l - length)
-        ;(meal-count ?e - event)      ; meals consumed so far in this narrative - maybe switch to event-count?
+        (total-flood-struct)
+
+
+
     
     )
 
@@ -131,8 +117,6 @@
             (over all (not-just-flooded))   ; receding action hasn't occured yet
 
             (at start (<= (current-time) (max-time)))
-            (at start (<= (work-count ?a) (work-max)))    ; adult has not done more than the work limit
-            
         )
         :effect (and 
             (at start (not (not-busy ?a)))     ; become busy
@@ -167,8 +151,6 @@
             (over all (not-just-flooded))   ; receding action hasn't occured yet
 
             (at start (<= (current-time) (max-time)))
-            (at start (<= (work-count ?a) (work-max)))    ; adult has not done more than the work limit
-            
         )
         :effect (and 
             (at start (not (not-busy ?a)))     ; become busy
@@ -306,7 +288,6 @@
             (over all (not-just-flooded))   ; receding action hasn't occured yet
 
             (at start (<= (current-time) (max-time)))
-            (at start (<= (work-count ?a) (work-max)))    ; adult has not done more than the work limit
         )
         :effect (and 
             (at start (not (not-busy ?a)))     ; become busy
@@ -343,7 +324,6 @@
             (over all (not-just-flooded))   ; receding action hasn't occured yet
 
             (at start (<= (current-time) (max-time)))
-            (at start (<= (tend-animal-count ?a) (work-max)))   ; can only tend animals as many times as the work limit will allow
         )
         :effect (and
             (at start (not (not-busy ?a)))     ; become busy
@@ -354,7 +334,7 @@
             (at end (not (not-tended ?mal)))       ; animal has now been tended to
             (at end (not (not-tired ?a)))          ; adult is now tired
 
-            (at end (increase (work-count ?a) 1)) 
+            (at end (increase (tend-animal-count ?a) 1)) 
             (at end (increase (current-time) (work-duration)))
         )
     )
@@ -492,7 +472,6 @@
 
             (over all (not-just-flooded))   ; receding action hasn't occured yet
  
-            (at start (<= (repair-count ?a) (repair-max))) ; this person has not completed more the max repairs today
             (at start (<= (current-time) (max-time)))
         )
         :effect (and 

@@ -5,17 +5,20 @@
     (:objects
         g11 g12 g13 g14 g15 g16 g17 g18 g21 g22 g23 g24 g25 g26 g27 g28 g31 g32 g33 g34 g35 g36 g37 g38 g41 g42 g43 g44 g45 g46 g47 g48 g51 g52 g53 g54 g55 g56 g57 g58 g61 g62 g63 g64 g65 g66 g67 g68 g71 g72 g73 g74 g75 g76 g77 g78 g81 g82 g83 g84 g85 g86 g87 g88 - landseg
         r11 r12 r13 r14 r15 r16 r17 r18 r21 r22 r23 r24 r25 r26 r27 r28 r31 r32 r33 r34 r35 r36 r37 r38 r41 r42 r43 r44 r45 r46 r47 r48 r51 r52 r53 r54 r55 r56 r57 r58 r61 r62 r63 r64 r65 r66 r67 r68 r71 r72 r73 r74 r75 r76 r77 r78 r81 r82 r83 r84 r85 r86 r87 r88 - riverseg
-        muise wallace - adult
-        mini_muise wallace_jr - child
-        muiseHouse whoseHouse - building
-        muiseFarm whoseFarm - farm
+        muise adult2 adult3 adult4 adult5 - adult
+        child1 child2 - child
+        house1 house2 house3 - building
+        farm1 farm2 farm3 - farm
         trevor - sheep
-
-        ;breakfast - event
-        mealLength - length
+        simple_cow - cow
+        simple_pig - pig
     )
     
     (:init
+
+        ;---------------------------------
+        ;           MAP SET-UP
+        ;---------------------------------
 
         ;
         ;   g11 <-> g12 <-> g13 <-> g14 <-> r15 <-> g16 <-> g17 <-> g18
@@ -151,13 +154,7 @@
         (adj g68 g78) (adj g78 g68)
         (adj g78 r88) (adj r88 g78)
 
-        ;identify which river segments have flood structures on them
-        (not-dredged r15) (not-dredged r25) (not-dredged r26) (not-dredged r36) (not-dredged r46) (not-dredged r56)
-        (not-dredged r57) (not-dredged r67) (not-dredged r77) (not-dredged r87) (not-dredged r88)
-        (not-embanked r15) (not-embanked r25) (not-embanked r26) (not-embanked r36) (not-embanked r46) (not-embanked r56)
-        (not-embanked r57) (not-embanked r67) (not-embanked r77) (not-embanked r87) (not-embanked r88)
-
-        ;identify which tiles are low ground and therefore floodable
+        ; set every tile as un-flooded to start
         (not-just-flooded)
         (not-flooded g11) (not-flooded g12) (not-flooded g13) (not-flooded g14) (not-flooded r15) (not-flooded g16) (not-flooded g17) (not-flooded g18)
         (not-flooded g21) (not-flooded g22) (not-flooded g23) (not-flooded g24) (not-flooded r25) (not-flooded r26) (not-flooded g27) (not-flooded g28)
@@ -168,98 +165,166 @@
         (not-flooded g71) (not-flooded g72) (not-flooded g73) (not-flooded g74) (not-flooded g75) (not-flooded g76) (not-flooded r77) (not-flooded g78)
         (not-flooded g81) (not-flooded g82) (not-flooded g83) (not-flooded g84) (not-flooded g85) (not-flooded g86) (not-flooded r87) (not-flooded r88)
 
-        ;locations of buildings
-        (location muiseHouse g63)
-        (location whoseHouse g43)
-        
-        ;locations of farms
-        (location muiseFarm g83)
-        (location whoseFarm g75)
-        
-        ;locations of villagers
-        (location muise g63)      ; muise begins down the road from his house
-        (location wallace g43)
-        (location mini_muise g63)
-        (location wallace_jr g43)
-
-        ;location of livestock
-        (location trevor g83)    ; trevor is located on the same tile as the muise farm
-
-        ;entity related fluents
-        (not (not-tired muise))     ; start off tired  
-        (not (not-tired wallace))     
-        (not-moving muise)          ; start off not moving
-        (not-moving wallace)
-        (not-busy muise)            ; start off not busy
-        (not-busy wallace)
-
-        (not (not-tired mini_muise))     ; start off tired  
-        (not (not-tired wallace_jr))     
-        (not-moving mini_muise)          ; start off not moving
-        (not-moving wallace_jr)
-        (not-busy mini_muise)            ; start off not busy
-        (not-busy wallace_jr)
-
-        ;entities not moving
-        (not-moving trevor)     ;trevor is a sheep...
-        (not-tended trevor)
-
-        ;structure related fluents
-        (owns muise muiseHouse)
-        (owns muise muiseFarm)
-        (owns mini_muise muiseHouse)
-        (owns mini_muise muiseFarm)
-        (owns wallace whoseHouse)
-        (owns wallace whoseFarm)
-        (owns wallace_jr whoseHouse)
-        (owns wallace_jr whoseFarm)
-
-        (not-damaged muiseHouse)
-        (not-damaged muiseFarm) 
-        (not-damaged whoseHouse)
-        (not-damaged whoseFarm)
-        (not (damaged muiseHouse))
-        (not (damaged muiseFarm))
-        (not (damaged whoseHouse))
-        (not (damaged whoseFarm))
+        ; every river tile starts without any flood prevention structures
+        (not-dredged r15) (not-dredged r25) (not-dredged r26) (not-dredged r36) (not-dredged r46) (not-dredged r56)
+        (not-dredged r57) (not-dredged r67) (not-dredged r77) (not-dredged r87) (not-dredged r88)
+        (not-embanked r15) (not-embanked r25) (not-embanked r26) (not-embanked r36) (not-embanked r46) (not-embanked r56)
+        (not-embanked r57) (not-embanked r67) (not-embanked r77) (not-embanked r87) (not-embanked r88)
 
 
+        ;---------------------------------
+        ;   STRUCTURE & ENTITY SET-UP
+        ;---------------------------------
 
-        ; keeping time 
-        ; -- durations --
-        (= (meal-duration) 1)    ; the length of a meal is 1 "hour"
-        (= (move-duration) 0.25)  ; it takes 15 "minutes" to move, or 1/4 of a time unit
-        (= (move-animal-duration) 0.50)  ; it takes 15 "minutes" to move, or 1/4 of a time unit
-        (= (repair-duration) 1)  ; it takes 1 hour to repair a structure
-        (= (work-duration) 1)    ; it takes 1 hour to complete a work action
-        (= (embank-duration) 2)
-        (= (dredge-duration) 2.25)
-        (= (flood-duration) 5)  
-        (= (reced-duration) 1) 
-
-        (= (current-time) 0)  ; the current time begins at 0
-        (= (max-time) 24) ; max narrative duration set to 24 "hours"
-
-        (= (meal-max) 3)                ; can only have 3 meals a day
-        (= (meal-count-breakfast muise) 0)
+        ; -- Villagers --
+        ; adult - muise
+        (location muise g63)                ; villager muise
+        (not (not-tired muise))             ; start off tired
+        (not-moving muise)                  ; start off not moving
+        (not-busy muise)                    ; start off not busy
+        (owns muise house1)             ; where muise lives
+        (owns muise farm1)              ; where muise works
+        (= (meal-count-breakfast muise) 0)  ; count the number of each meals had
         (= (meal-count-lunch muise) 0)
         (= (meal-count-dinner muise) 0)
-        (= (meal-count-breakfast wallace) 0)
-        (= (meal-count-lunch wallace) 0)
-        (= (meal-count-dinner wallace) 0)
-        
-        (= (repair-max) 10)
-        (= (repair-count muise) 0)      ; no repairs have been made yet
-        (= (repair-count wallace) 0)
+        (= (repair-count muise) 0)          ; count the number of repairs done
+        (= (tend-animal-count muise) 0)     ; count the number of animals tended
+        (= (work-count muise) 0)            ; count the number of times worked
 
-        (= (tend-animal-count muise) 0)
-        (= (tend-animal-count wallace) 0)
-        
-        (= (work-max) 10)
-        (= (work-count muise) 0)
-        (= (work-count wallace) 0)
+        ; adult - adult2
+        (location adult2 g22)
+        (not (not-tired adult2))
+        (not-moving adult2)
+        (not-busy adult2)
+        (owns adult2 house2)
+        (owns adult2 farm2)
+        (= (meal-count-breakfast adult2) 0)
+        (= (meal-count-lunch adult2) 0)
+        (= (meal-count-dinner adult2) 0)
 
-        (= (total-flood-struct) 0)
+        ; adult - adult3
+        (location adult3 g11)
+        (not (not-tired adult3))
+        (not-moving adult3)
+        (not-busy adult3)
+        (owns adult3 house2)
+        (owns adult3 farm2)
+        (= (meal-count-breakfast adult3) 0)
+        (= (meal-count-lunch adult3) 0)
+        (= (meal-count-dinner adult3) 0)
+
+        ; adult - adult4
+        (location adult4 g81)
+        (not (not-tired adult4))
+        (not-moving adult4)
+        (not-busy adult4)
+        (owns adult4 house3)
+        (owns adult4 farm3)
+        (= (meal-count-breakfast adult4) 0)
+        (= (meal-count-lunch adult4) 0)
+        (= (meal-count-dinner adult4) 0)
+
+        ; adult - adult5
+        (location adult5 g35)
+        (not (not-tired adult5))
+        (not-moving adult5)
+        (not-busy adult5)
+        (owns adult5 house3)
+        (owns adult5 farm3)
+        (= (meal-count-breakfast adult5) 0)
+        (= (meal-count-lunch adult5) 0)
+        (= (meal-count-dinner adult5) 0)
+
+        ; child - child1
+        (location child1 g73)
+        (not (not-tired child1))
+        (not-moving child1)
+        (not-busy child1)
+        (owns child1 house2)
+        (owns child1 farm2)
+        (= (meal-count-breakfast child1) 0)
+        (= (meal-count-lunch child1) 0)
+        (= (meal-count-dinner child1) 0)
+
+        ; child - child2
+        (location child2 g22)
+        (not (not-tired child2))
+        (not-moving child2)
+        (not-busy child2)
+        (owns child2 house2)
+        (owns child2 farm2)
+        (= (meal-count-breakfast child2) 0)
+        (= (meal-count-lunch child2) 0)
+        (= (meal-count-dinner child2) 0)
+
+
+        ; -- Animals --
+        ; beloved sheep - trevor
+        (location trevor g83)    ; trevor is located on the same tile as the muise farm
+        (not-tended trevor)      ; start off not tended
+        (not-moving trevor)      ; start off not moving
+
+        ; animal - simple_cow
+        (location simple_cow g41)
+        (not-moving simple_cow)
+        (not-tended simple_cow)
+
+        ; animal - simple_pig
+        (location simple_pig g76)
+        (not-moving simple_pig)
+        (not-tended simple_pig)        
+
+
+        ; -- Structures ---
+        ; building - house1
+        (location house1 g63)                           ; locations of building
+        (not-damaged house1) (not (damaged house1))     ; structure starts off un-damaged
+
+        ; building - house2
+        (location house2 g22)
+        (not-damaged house2) (not (damaged house2)) 
+
+        ; building - house3
+        (location house3 g34)
+        (not-damaged house3) (not (damaged house3))       
+        
+        ; farm - farm1
+        (location farm1 g83)                            ; locations of farm
+        (not-damaged farm1) (not (damaged farm1))       ; structure starts off un-damaged
+
+        ; farm - farm2
+        (location farm2 g41)
+        (not-damaged farm2) (not (damaged farm2))
+
+        ; farm - farm3
+        (location farm3 g76)
+        (not-damaged farm3) (not (damaged farm3))
+        
+        
+
+        ;---------------------------------
+        ;   KEEPING TIME
+        ;---------------------------------
+
+        ; durations
+        (= (meal-duration) 1)               ; the length of a meal is 1 "hour"
+        (= (move-duration) 0.25)            ; it takes 15 "minutes" to move, or 1/4 of a time unit
+        (= (move-animal-duration) 0.50)     ; it takes 30 "minutes" to move, or 1/2 of a time unit
+        (= (repair-duration) 1)             ; it takes 1 hour to repair a structure
+        (= (work-duration) 1)               ; it takes 1 hour to complete a work action
+        (= (embank-duration) 2)             ; it takes 2 hours to embank a river tile
+        (= (dredge-duration) 2.25)          ; it takes 2 and a bit hours to dredge a river tile
+        (= (flood-duration) 5)              ; floods last for 5 hours
+        (= (reced-duration) 1)              ; floods receed after 1 hour
+
+        ; keep track of how much time has elapsed
+        (= (current-time) 0)                ; the current time begins at 0
+        (= (max-time) 24)                   ; max narrative duration set to 24 "hours"
+
+        ; other county things
+        (= (meal-max) 3)                    ; can only have 3 meals a day
+
+        (= (total-flood-struct) 0)          ; total flood structures
 
     )
     
@@ -289,6 +354,7 @@
             (preventedFloodingEvent)
             ;(tendAnimalEvent)
             (playEvent)
+            (tendAnimalEvent)
 
             ;(= (total-flood-struct) 3)
             

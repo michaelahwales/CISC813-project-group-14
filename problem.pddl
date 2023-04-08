@@ -265,6 +265,7 @@
     
     (:goal
         (and
+        
             ;(location trevor g35)      ; the sheep known as 'trevor' should be in muiseFarm (g83)
             ;(tended trevor)           ; trevor the sheep should be tended to
             ;(breakfastEvent)
@@ -285,7 +286,7 @@
             ; goal must be set to have a flood receeding scene if you want the flood event to happen
             ; for successful flood Prevention Event
 
-            ;(preventedFloodingEvent)
+            (preventedFloodingEvent)
             ;(tendAnimalEvent)
             (playEvent)
 

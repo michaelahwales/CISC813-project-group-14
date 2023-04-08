@@ -52,7 +52,7 @@
         (floodingEvent)           ; does a flooding event occur in this scenario?
         (preventedFloodingEvent)    ; is a flood successfully prevented in this scenario?
         (dredgeEvent)       ; does a dredge event occur in this scenario? 
-        (embankEvent)       ; does a embankment event occur in this scenario?
+        (embankEvent)       ; does an embankment event occur in this scenario?
         (breakfastEvent)    ; does a breakfast event occur in this scenario?
         (lunchEvent)        ; does a lunch event occur in this scenario?
         (dinnerEvent)       ; does a dinner event occur in this scenario?

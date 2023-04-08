@@ -63,7 +63,7 @@
 
         ; -- Time --
         (not-busy ?x - person) ; make sure person is not doing another activity
-        (not-moving ?x - entity)
+        (not-moving ?x - entity)   ; make sure an entity is not currently moving
         (not-tired ?x - person)    ; is a person tired? (people become tired from doing things) 
         ;(not-moving-animal ?x - adult) ; a relic from ancient times
         

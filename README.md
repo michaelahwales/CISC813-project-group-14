@@ -17,11 +17,15 @@ The goal in the problem file can be set to include any of the following events:
         (workEvent)           
         (tendAnimalEvent)  
         (playEvent)    
-        (repairEvent)            
+        (repairEvent) 
 
-and uses partial order planning forwards (POPF) planning to schedule
+All of these events are available in the problem_1 and problem_2 problem files,
+any event which the user would like to occur in the output plan can be uncommented
+for use.       
+
+The planner partial order planning forwards (POPF) planning to schedule
 actions in the village to trigger the requested events in a logical order
-for the entities and locations set up in the village problem
+for the entities and locations set up in the village problem file.
 
 
 Domain: 
@@ -41,9 +45,6 @@ Actions:
 - recedingFloodScene
 - preventedFloodingScene___it_rains_hard_for_awhile
 
-Problem:
-- 8 by 8 map grid
-- two adult villagers
-- buildings
-- farms
-- animals
+Problem: (run the planner with the problem file of your choice)
+- problem_1
+- problem_2

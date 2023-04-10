@@ -46,5 +46,6 @@ Actions:
 - preventedFloodingScene___it_rains_hard_for_awhile
 
 Problem: (run the planner with the problem file of your choice)
-- problem_1
-- problem_2
+- problem_1 (popf -T domain.pddl problem_1.pddl)
+- problem_2 (popf -T domain.pddl problem_2.pddl)
+

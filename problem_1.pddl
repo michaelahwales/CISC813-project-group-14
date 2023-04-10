@@ -5,14 +5,11 @@
     (:objects
         g11 g12 g13 g14 g15 g16 g17 g18 g21 g22 g23 g24 g25 g26 g27 g28 g31 g32 g33 g34 g35 g36 g37 g38 g41 g42 g43 g44 g45 g46 g47 g48 g51 g52 g53 g54 g55 g56 g57 g58 g61 g62 g63 g64 g65 g66 g67 g68 g71 g72 g73 g74 g75 g76 g77 g78 g81 g82 g83 g84 g85 g86 g87 g88 - landseg
         r11 r12 r13 r14 r15 r16 r17 r18 r21 r22 r23 r24 r25 r26 r27 r28 r31 r32 r33 r34 r35 r36 r37 r38 r41 r42 r43 r44 r45 r46 r47 r48 r51 r52 r53 r54 r55 r56 r57 r58 r61 r62 r63 r64 r65 r66 r67 r68 r71 r72 r73 r74 r75 r76 r77 r78 r81 r82 r83 r84 r85 r86 r87 r88 - riverseg
-        muise adult2 adult3 adult4 adult5 - adult
-        child1 child2 - child
+        muise - adult
         house1 house2 house3 - building
         farm1 farm2 farm3 - farm
         church - church
         trevor - sheep
-        simple_cow - cow
-        simple_pig - pig
     )
     
     (:init
@@ -185,115 +182,20 @@
         (not-busy muise)                    ; start off not busy
         (owns muise house1)             ; where muise lives
         (owns muise farm1)              ; where muise works
-        (owns muise church)              ; where muise grabs a late night snack after the town flooded
+        ;(owns muise church)              ; where muise grabs a late night snack after the town flooded
         (= (meal-count-breakfast muise) 0)  ; count the number of each meals had
         (= (meal-count-lunch muise) 0)
         (= (meal-count-dinner muise) 0)
         (= (repair-count muise) 0)          ; count the number of repairs done
         (= (tend-animal-count muise) 0)     ; count the number of animals tended
         (= (work-count muise) 0)            ; count the number of times worked
-        
-
-        ; adult - adult2
-        (location adult2 g22)
-        (not (not-tired adult2))
-        (not-moving adult2)
-        (not-busy adult2)
-        (owns adult2 house2)
-        (owns adult2 farm2)
-        (owns adult2 church)
-        (= (meal-count-breakfast adult2) 0)
-        (= (meal-count-lunch adult2) 0)
-        (= (meal-count-dinner adult2) 0)
-        (= (repair-count adult2) 0)          
-        (= (tend-animal-count adult2) 0)     
-        (= (work-count adult2) 0)            
-
-        ; adult - adult3
-        (location adult3 g11)
-        (not (not-tired adult3))
-        (not-moving adult3)
-        (not-busy adult3)
-        (owns adult3 house2)
-        (owns adult3 farm2)
-        (owns adult3 church)
-        (= (meal-count-breakfast adult3) 0)
-        (= (meal-count-lunch adult3) 0)
-        (= (meal-count-dinner adult3) 0)
-        (= (repair-count adult3) 0)          
-        (= (tend-animal-count adult3) 0)     
-        (= (work-count adult3) 0)   
-
-        ; adult - adult4
-        (location adult4 g81)
-        (not (not-tired adult4))
-        (not-moving adult4)
-        (not-busy adult4)
-        (owns adult4 house3)
-        (owns adult4 farm3)
-        (owns adult4 church)
-        (= (meal-count-breakfast adult4) 0)
-        (= (meal-count-lunch adult4) 0)
-        (= (meal-count-dinner adult4) 0)
-        (= (repair-count adult4) 0)          
-        (= (tend-animal-count adult4) 0)     
-        (= (work-count adult4) 0)   
-
-        ; adult - adult5
-        (location adult5 g35)
-        (not (not-tired adult5))
-        (not-moving adult5)
-        (not-busy adult5)
-        (owns adult5 house3)
-        (owns adult5 farm3)
-        (owns adult5 church)
-        (= (meal-count-breakfast adult5) 0)
-        (= (meal-count-lunch adult5) 0)
-        (= (meal-count-dinner adult5) 0)
-        (= (repair-count adult5) 0)          
-        (= (tend-animal-count adult5) 0)     
-        (= (work-count adult5) 0)   
-
-        ; child - child1
-        (location child1 g73)
-        (not (not-tired child1))
-        (not-moving child1)
-        (not-busy child1)
-        (owns child1 house2)
-        (owns child1 farm2)
-        (owns child1 church)
-        (= (meal-count-breakfast child1) 0)
-        (= (meal-count-lunch child1) 0)
-        (= (meal-count-dinner child1) 0) 
-
-        ; child - child2
-        (location child2 g22)
-        (not (not-tired child2))
-        (not-moving child2)
-        (not-busy child2)
-        (owns child2 house2)
-        (owns child2 farm2)
-        (owns child2 church)
-        (= (meal-count-breakfast child2) 0)
-        (= (meal-count-lunch child2) 0)
-        (= (meal-count-dinner child2) 0)
 
 
         ; -- Animals --
         ; beloved sheep - trevor
         (location trevor g52)    ; trevor is located on the same tile as the muise farm
         (not-tended trevor)      ; start off not tended
-        (not-moving trevor)      ; start off not moving
-
-        ; animal - simple_cow
-        (location simple_cow g78)
-        (not-moving simple_cow)
-        (not-tended simple_cow)
-
-        ; animal - simple_pig
-        (location simple_pig g58)
-        (not-moving simple_pig)
-        (not-tended simple_pig)        
+        (not-moving trevor)      ; start off not moving      
 
 
         ; -- Structures ---

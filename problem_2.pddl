@@ -362,7 +362,7 @@
             ;(breakfastEvent)         ; does a breakfast event occur in this scenario?
             ;(lunchEvent)             ; does a lunch event occur in this scenario?
             ;(dinnerEvent)            ; does a dinner event occur in this scenario?
-            ;(workEvent)              ; does a work event occur in this scenario?
+            (workEvent)              ; does a work event occur in this scenario?
             (tendAnimalEvent)        ; does a tending animal event occur in this scenario?
             ;(playEvent)              ; does a play event occur in this senario?
             (repairEvent)             ; does a work event occur in this scenario?

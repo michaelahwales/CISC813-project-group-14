@@ -20,7 +20,9 @@
         mapseg locatable - object
         riverseg landseg lowgroundseg - mapseg
         structure entity - locatable
-        building farm - structure
+        livable destroyable - structure
+        building church - livable
+        building farm - destroyable
         animal person - entity
         cow pig sheep - animal
         adult child - person
@@ -53,7 +55,8 @@
         (dinnerEvent)       ; does a dinner event occur in this scenario?
         (workEvent)             ; does a work event occur in this scenario?
         (tendAnimalEvent)       ; does a tending animal event occur in this scenario?
-        (playEvent)
+        (playEvent)         ; does a play event occur in this senario?
+        (repairEvent)             ; does a work event occur in this scenario?
 
         ; -- Time --
         (not-busy ?x - person) ; make sure person is not doing another activity
@@ -169,7 +172,7 @@
 
     ; DURATIVE - have a breakfast scene to remove the tired condition from a person
     (:durative-action breakfastScene
-        :parameters (?l - landseg ?p - person ?h - building)
+        :parameters (?l - landseg ?p - person ?h - livable)
         :duration (= ?duration (meal-duration))
         :condition (and
             ; make sure the person and the building are both on the same land segment
@@ -203,7 +206,7 @@
 
     ; DURATIVE - have a lunch scene to remove the tired condition from a person
     (:durative-action lunchScene
-        :parameters (?l - landseg ?p - person ?h - building)
+        :parameters (?l - landseg ?p - person ?h - livable)
         :duration (= ?duration (meal-duration))
         :condition (and
             ; make sure the person and the building are both on the same land segment
@@ -237,7 +240,7 @@
 
     ; DURATIVE - have a dinner scene to remove the tired condition from a person
     (:durative-action dinnerScene
-        :parameters (?l - landseg ?p - person ?h - building)
+        :parameters (?l - landseg ?p - person ?h - livable)
         :duration (= ?duration (meal-duration))
         :condition (and
             ; make sure the person and the building are both on the same land segment
@@ -311,7 +314,7 @@
             (over all (location ?mal ?l))
             (over all (location ?f ?l))    ; assume if entity on same tile as the farm, they may use it
             (over all (not-flooded ?l))
-            ;(over all (not-damaged ?f))
+            (over all (not-damaged ?f))
 
             (at start (not-tended ?mal))  ; animal has not already been tended to
             (at start (not-tired ?a))     ; adult is not tired
@@ -376,6 +379,40 @@
             (at end (not (not-tired ?c2)))
 
             (at end (increase (current-time) (work-duration)))
+        )
+    )
+
+    ; DURATIVE - repair a damaged farm or building! requires an adult!
+    (:durative-action repairScene
+        :parameters (?a - adult ?s - structure ?l - landseg)
+        :duration (= ?duration (repair-duration))
+        :condition (and 
+            ; make sure adult and strucutre are on the same tile
+            (over all (location ?a ?l))
+            (over all (location ?s ?l))    ; assume if entity on same tile as the structure, they can repair it 
+            (over all (not-flooded ?l))
+
+            (at start (damaged ?s))       ; structure is damaged
+            (at start (not-tired ?a))     ; adult is not tired
+
+            (at start (not-busy ?a))   ; adult is not already working
+
+            (over all (not-just-flooded))   ; receding action hasn't occured yet
+ 
+            (at start (<= (current-time) (max-time)))
+        )
+        :effect (and 
+            (at end (repairEvent))
+
+            (at start (not (not-busy ?a)))     ; become busy
+            (at end (not-busy ?a))             ; no longer busy
+
+            (at end (not-damaged ?s))        ; structure is now not-damaged
+            (at end (not (damaged ?s)))      ; and no longer damaged  - doubled up, to get around no negative preconditions
+            (at end (not (not-tired ?a)))    ; adult is now tired
+
+            (at end (increase (current-time) (repair-duration)))
+            (at end (increase (repair-count ?a) 1))   ; one repair job completed
         )
     )
     
@@ -454,38 +491,6 @@
             (at end (increase (current-time) (move-duration)))
         )
     )
-
-    ; DURATIVE - repair a damaged farm or building! requires an adult!
-    (:durative-action repair-structure
-        :parameters (?a - adult ?s - structure ?l - landseg)
-        :duration (= ?duration (repair-duration))
-        :condition (and 
-            ; make sure adult and strucutre are on the same tile
-            (over all (location ?a ?l))
-            (over all (location ?s ?l))    ; assume if entity on same tile as the structure, they can repair it 
-            (over all (not-flooded ?l))
-
-            (at start (damaged ?s))       ; structure is damaged
-            (at start (not-tired ?a))     ; adult is not tired
-
-            (at start (not-busy ?a))   ; adult is not already working
-
-            (over all (not-just-flooded))   ; receding action hasn't occured yet
- 
-            (at start (<= (current-time) (max-time)))
-        )
-        :effect (and 
-            (at start (not (not-busy ?a)))     ; become busy
-            (at end (not-busy ?a))             ; no longer busy
-
-            (at end (not-damaged ?s))        ; structure is now not-damaged
-            (at end (not (damaged ?s)))      ; and no longer damaged  - doubled up, to get around no negative preconditions
-            (at end (not (not-tired ?a)))    ; adult is now tired
-
-            (at end (increase (current-time) (repair-duration)))
-            (at end (increase (repair-count ?a) 1))   ; one repair job completed
-        )
-    )
     
 
     ; NOW IN A DOMAIN NEAR YOU
@@ -493,46 +498,47 @@
     ; DURATIVE - salt the earth! a flooding event occurs which stunts just about everything
     (:durative-action floodingScene
         :parameters ()
-        :duration (= ?duration flood-duration)
-        :condition (and 
-            (at start (< (total-flood-struct) 3))   ; number of flood structures is not enough to prevent the flood (<3)
-            (at start (<= (current-time) (max-time)))
+        :duration (= ?duration (flood-duration))
+        :condition (and
+            (at start (= (total-flood-struct) 0))       ; number of flood structures is not enough to prevent the flood
+            (at start (<= (current-time) (max-time)))   
         )
         :effect (and 
 
-            (at start (floodingEvent))
+            (at end (floodingEvent))            ; flooding event has occured
             (at end (not (not-just-flooded)))   ; receding action trigger next
 
-            (forall (?t - landseg) (at start (not (not-flooded ?t))))
-            (forall (?r - riverseg) (and
-                (at end (not-embanked ?r))
-                (at end (not-dredged ?r))
+            (forall (?t - mapseg) (at start (not (not-flooded ?t))))   ; flood all map segments
+            (forall (?r - riverseg) (and                                ; remove flood prevention on river segments
+                (at start (not-embanked ?r))
+                (at start (not-dredged ?r))
             ))
-            (forall (?s - structure) (and
-                (at start (damaged ?s))
+            (forall (?s - destroyable) (and                               ; damage all structures
+                (at start (damaged ?s))                     
                 (at start (not (not-damaged ?s)))
             ))
-            (forall (?p - person) (at start (not (not-tired ?p))))
-            (forall (?a - animal)  (at end (not (not-tended ?a))))
+            (forall (?p - person) (at start (not (not-tired ?p))))     ; all villagers become tired
+            (forall (?a - animal)  (at start (not-tended ?a)))         ; all animals become untended
 
+            (at end (decrease (total-flood-struct) 1))
             (at end (increase (current-time) (flood-duration)))
         )
     )
-    ; note: would have liked to make this more complicated however due to conditionals not being compatible with temporal
-    ;       planners we present a simplified version that's all or nothing
+    ; note: would have liked to make this more complicated however due to conditionals not being compatible with popf
+    ;       planner we present a simplified version that's all or nothing
 
     ; DURATIVE - the flood waters recede
     (:durative-action recedingfloodScene
         :parameters ()
         :duration (= ?duration reced-duration)
         :condition (and
-            (at start (floodingEvent))
-            (at start (<= (current-time) (max-time)))
+            (at start (floodingEvent))                          ; want to make sure a flooding event has just occured
+            (at start (<= (current-time) (max-time)))           
         )
         :effect (and
             (at start (not-just-flooded))   ; receding action occcurs
 
-            (forall (?t - landseg) (at start (not-flooded ?t)))
+            (forall (?t - mapseg) (at start (not-flooded ?t)))     ; un-flood all map segments
 
             (at end (increase (current-time) (reced-duration)))
         )
@@ -543,12 +549,11 @@
         :parameters ()
         :duration (= ?duration flood-duration)
         :condition (and
-            (at start (>= (total-flood-struct) 3))   ; number of flood structures is enough to prevent the flood (>=3)
+            (at start (>= (total-flood-struct) 1))   ; number of flood structures is enough to prevent the flood (>=3)
             (at start (<= (current-time) (max-time)))
         )
         :effect (and 
-
-            (at start (preventedFloodingEvent))
+            (at start (preventedFloodingEvent))         ; flood prevention event has occured
             (at end (increase (current-time) (flood-duration)))
         )
     )

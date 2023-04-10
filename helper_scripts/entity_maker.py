@@ -12,7 +12,7 @@ done = False
 # iterate through for multiple single entries
 while done == False:
 
-    print(" adult / child / animal / farm / house ")
+    print(" adult / child / animal / farm / building / church ")
     type = input("Select entity type (case-sensitive): ")
 
     if (type == "adult") | (type == "child"):
@@ -21,6 +21,7 @@ while done == False:
         entity_coord = input("Enter the entities name (row,col): ")
         entity_home = input("Enter the entities home (case-sensitive): ")
         entity_farm = input("Enter the entities farm (case-sensitive): ")
+        entity_church = input("Enter the entities local church (case-sensitive): ")
         print("")
 
         # starting comment
@@ -35,10 +36,16 @@ while done == False:
         print("(not-busy " + entity_name + ")")
         print("(owns " + entity_name + " " + entity_home + ")")
         print("(owns " + entity_name + " " + entity_farm + ")")
+        print("(owns " + entity_name + " " + entity_church + ")")
 
         print("(= (meal-count-breakfast " + entity_name + ") 0)")
         print("(= (meal-count-lunch " + entity_name + ") 0)")
         print("(= (meal-count-dinner " + entity_name + ") 0)")
+
+        if (type == "adult"):
+            print("(= (repair-count " + entity_name + ") 0)")
+            print("(= (tend-animal-count " + entity_name + ") 0)")
+            print("(= (work-count " + entity_name + ") 0)") 
 
     elif (type == "animal"):
         # user input
@@ -56,7 +63,7 @@ while done == False:
         print("(not-moving " + entity_name + ")")
         print("(not-tended " + entity_name + ")")
 
-    elif (type == "farm") | (type == "house"):
+    elif (type == "farm") | (type == "building") | (type == "church"):
         # user input
         struct_name = input("Enter the structures name (case-sensitive): ")
         struct_coord = input("Enter the structures location (row,col): ")

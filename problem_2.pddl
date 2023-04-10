@@ -1,4 +1,4 @@
-(define (problem northeye1)
+(define (problem northeye2)
 
     (:domain northeye)
     
@@ -9,6 +9,7 @@
         child1 child2 - child
         house1 house2 house3 - building
         farm1 farm2 farm3 - farm
+        church - church
         trevor - sheep
         simple_cow - cow
         simple_pig - pig
@@ -155,7 +156,7 @@
         (adj g78 r88) (adj r88 g78)
 
         ; set every tile as un-flooded to start
-        (not-just-flooded)
+        (not-just-flooded) ; chaning this to (not(not-just-flooded)) triggers flooding event at start... 
         (not-flooded g11) (not-flooded g12) (not-flooded g13) (not-flooded g14) (not-flooded r15) (not-flooded g16) (not-flooded g17) (not-flooded g18)
         (not-flooded g21) (not-flooded g22) (not-flooded g23) (not-flooded g24) (not-flooded r25) (not-flooded r26) (not-flooded g27) (not-flooded g28)
         (not-flooded g31) (not-flooded g32) (not-flooded g33) (not-flooded g34) (not-flooded g35) (not-flooded r36) (not-flooded g37) (not-flooded g38)
@@ -184,12 +185,14 @@
         (not-busy muise)                    ; start off not busy
         (owns muise house1)             ; where muise lives
         (owns muise farm1)              ; where muise works
+        (owns muise church)              ; where muise grabs a late night snack after the town flooded
         (= (meal-count-breakfast muise) 0)  ; count the number of each meals had
         (= (meal-count-lunch muise) 0)
         (= (meal-count-dinner muise) 0)
         (= (repair-count muise) 0)          ; count the number of repairs done
         (= (tend-animal-count muise) 0)     ; count the number of animals tended
         (= (work-count muise) 0)            ; count the number of times worked
+        
 
         ; adult - adult2
         (location adult2 g22)
@@ -198,9 +201,13 @@
         (not-busy adult2)
         (owns adult2 house2)
         (owns adult2 farm2)
+        (owns adult2 church)
         (= (meal-count-breakfast adult2) 0)
         (= (meal-count-lunch adult2) 0)
         (= (meal-count-dinner adult2) 0)
+        (= (repair-count adult2) 0)          
+        (= (tend-animal-count adult2) 0)     
+        (= (work-count adult2) 0)            
 
         ; adult - adult3
         (location adult3 g11)
@@ -209,9 +216,13 @@
         (not-busy adult3)
         (owns adult3 house2)
         (owns adult3 farm2)
+        (owns adult3 church)
         (= (meal-count-breakfast adult3) 0)
         (= (meal-count-lunch adult3) 0)
         (= (meal-count-dinner adult3) 0)
+        (= (repair-count adult3) 0)          
+        (= (tend-animal-count adult3) 0)     
+        (= (work-count adult3) 0)   
 
         ; adult - adult4
         (location adult4 g81)
@@ -220,9 +231,13 @@
         (not-busy adult4)
         (owns adult4 house3)
         (owns adult4 farm3)
+        (owns adult4 church)
         (= (meal-count-breakfast adult4) 0)
         (= (meal-count-lunch adult4) 0)
         (= (meal-count-dinner adult4) 0)
+        (= (repair-count adult4) 0)          
+        (= (tend-animal-count adult4) 0)     
+        (= (work-count adult4) 0)   
 
         ; adult - adult5
         (location adult5 g35)
@@ -231,9 +246,13 @@
         (not-busy adult5)
         (owns adult5 house3)
         (owns adult5 farm3)
+        (owns adult5 church)
         (= (meal-count-breakfast adult5) 0)
         (= (meal-count-lunch adult5) 0)
         (= (meal-count-dinner adult5) 0)
+        (= (repair-count adult5) 0)          
+        (= (tend-animal-count adult5) 0)     
+        (= (work-count adult5) 0)   
 
         ; child - child1
         (location child1 g73)
@@ -242,9 +261,10 @@
         (not-busy child1)
         (owns child1 house2)
         (owns child1 farm2)
+        (owns child1 church)
         (= (meal-count-breakfast child1) 0)
         (= (meal-count-lunch child1) 0)
-        (= (meal-count-dinner child1) 0)
+        (= (meal-count-dinner child1) 0) 
 
         ; child - child2
         (location child2 g22)
@@ -253,6 +273,7 @@
         (not-busy child2)
         (owns child2 house2)
         (owns child2 farm2)
+        (owns child2 church)
         (= (meal-count-breakfast child2) 0)
         (= (meal-count-lunch child2) 0)
         (= (meal-count-dinner child2) 0)
@@ -260,17 +281,17 @@
 
         ; -- Animals --
         ; beloved sheep - trevor
-        (location trevor g83)    ; trevor is located on the same tile as the muise farm
+        (location trevor g52)    ; trevor is located on the same tile as the muise farm
         (not-tended trevor)      ; start off not tended
         (not-moving trevor)      ; start off not moving
 
         ; animal - simple_cow
-        (location simple_cow g41)
+        (location simple_cow g78)
         (not-moving simple_cow)
         (not-tended simple_cow)
 
         ; animal - simple_pig
-        (location simple_pig g76)
+        (location simple_pig g58)
         (not-moving simple_pig)
         (not-tended simple_pig)        
 
@@ -300,6 +321,9 @@
         (location farm3 g76)
         (not-damaged farm3) (not (damaged farm3))
         
+        ; church - church
+        (location church g61)
+        (not-damaged church) (not (damaged church))
         
 
         ;---------------------------------
@@ -314,8 +338,8 @@
         (= (work-duration) 1)               ; it takes 1 hour to complete a work action
         (= (embank-duration) 2)             ; it takes 2 hours to embank a river tile
         (= (dredge-duration) 2.25)          ; it takes 2 and a bit hours to dredge a river tile
-        (= (flood-duration) 5)              ; floods last for 5 hours
-        (= (reced-duration) 1)              ; floods receed after 1 hour
+        (= (flood-duration) 5)              ; how long a flood lasts (hours)
+        (= (reced-duration) 1)              ; how long till the flood receds (hours)
 
         ; keep track of how much time has elapsed
         (= (current-time) 0)                ; the current time begins at 0
@@ -326,38 +350,24 @@
 
         (= (total-flood-struct) 0)          ; total flood structures
 
+
     )
     
     (:goal
         (and
-        
-            ;(location trevor g35)      ; the sheep known as 'trevor' should be in muiseFarm (g83)
-            ;(tended trevor)           ; trevor the sheep should be tended to
-            ;(breakfastEvent)
-            ;(>= (current-time) 4)
-            ;(>= (meal-count breakfast) 3)
-            ;(<= (meal-count breakfast) 5)
+            (floodingEvent)          ; does a flooding event occur in this scenario?
+            ;(preventedFloodingEvent) ; is a flood successfully prevented in this scenario?
+            ;(dredgeEvent)            ; does a dredge event occur in this scenario? 
+            ;(embankEvent)            ; does an embankment event occur in this scenario?
+            ;(breakfastEvent)         ; does a breakfast event occur in this scenario?
+            ;(lunchEvent)             ; does a lunch event occur in this scenario?
+            ;(dinnerEvent)            ; does a dinner event occur in this scenario?
+            ;(workEvent)              ; does a work event occur in this scenario?
+            (tendAnimalEvent)        ; does a tending animal event occur in this scenario?
+            ;(playEvent)              ; does a play event occur in this senario?
+            (repairEvent)             ; does a work event occur in this scenario?
 
-            ;(= (meal-count breakfast) 2)
-            ;(not-tired muise)
-            ;(lunchEvent)
 
-            ;(location muise g83)
-            ;(dinnerEvent)
-            ;(workEvent)
-
-            ;(tendAnimalEvent)
-
-            ; goal must be set to have a flood receeding scene if you want the flood event to happen
-            ; for successful flood Prevention Event
-
-            (preventedFloodingEvent)
-            ;(tendAnimalEvent)
-            (playEvent)
-            (tendAnimalEvent)
-
-            ;(= (total-flood-struct) 3)
-            
         )
     )
     
